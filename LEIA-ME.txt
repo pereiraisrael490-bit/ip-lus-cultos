@@ -1,0 +1,22 @@
+APP MOBILE IP LUS – USO NO CELULAR
+
+1. Publique esta pasta em uma hospedagem HTTPS (Netlify, Cloudflare Pages, GitHub Pages etc.).
+2. Abra o endereço pelo Chrome/Android ou Safari/iPhone.
+3. Configure uma vez a URL do Supabase e a chave pública anon/publishable, caso ainda não estejam incorporadas.
+4. Faça login com a conta individual da liderança.
+5. No Android, use “Instalar app” / “Adicionar à tela inicial”. No iPhone, Compartilhar → Adicionar à Tela de Início.
+
+PARA DEIXAR A CONEXÃO 100% INCORPORADA
+Envie somente a Project URL e a anon/public key do Supabase. Não envie service_role nem senhas. Esses dois valores podem ser inseridos nas constantes DEFAULT_SUPABASE_URL e DEFAULT_SUPABASE_ANON_KEY em index.html.
+
+ARQUIVOS
+- index.html: aplicativo
+- manifest.webmanifest: instalação como PWA
+- sw.js: cache do app
+- icon-192.png / icon-512.png: ícones
+
+
+VERSÃO v2 CORRIGIDA
+- 11/09/2026 corrigido para R$ 3,50.
+- 25/08/2026 mantido como valor não informado (não convertido em zero).
+- Incluídos 31/05 e registros de 02/06, 05/06, 07/06, 09/06 e 12/06.
