@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IP LUS • Painel da Liderança</title>
+<!-- build: mobile-v3-responsive-2026-09-27 -->
 <meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
@@ -161,6 +162,79 @@ th{background:var(--card2);color:var(--muted);position:sticky;top:0;z-index:1}
   .filters{grid-template-columns:1fr}
   .kpis{grid-template-columns:1fr 1fr}
   .kpi strong{font-size:20px}
+}
+
+
+/* ===== Home mobile v3 • responsividade refinada ===== */
+html,body{max-width:100%;overflow-x:hidden}
+.card,.kpi,.grid2>*{min-width:0}
+.desktopTypeTable{display:block}
+.typeMobileGrid{display:none}
+.highlightGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.highlightCard{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:13px;min-width:0}
+.highlightCard small{display:block;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+.highlightCard strong{display:block;font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.highlightCard span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+
+@media(max-width:800px){
+  main{width:100%;max-width:100%;padding-left:10px;padding-right:10px}
+  #dash{width:100%;max-width:100%;overflow:hidden}
+  #dash>.notice,#dash>.filters,#dash>.kpis,#dash>.grid2{width:100%;max-width:100%}
+  .notice{box-shadow:none}
+  .filters{grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+  .filters .field{min-width:0}
+  .filters .field:last-child{grid-column:1/-1}
+  .filters .field:last-child .btn{min-height:42px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  .kpi{padding:12px 11px;min-height:90px;display:flex;flex-direction:column;justify-content:center}
+  .kpi small{font-size:9px;line-height:1.2}
+  .kpi strong{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;font-size:clamp(19px,6vw,25px);line-height:1.08}
+  .kpi .sub{font-size:8.5px;line-height:1.25}
+  .grid2{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  .card{width:100%;max-width:100%;overflow:hidden;padding:13px}
+  .card h3{font-size:17px;line-height:1.2}
+  .card p{font-size:11px;line-height:1.35;margin-bottom:10px}
+  .chart{height:220px;width:100%;max-width:100%;overflow:hidden}
+  .chart svg{display:block;width:100%;height:100%;max-width:100%}
+  .desktopTypeTable{display:none}
+  .typeMobileGrid{display:grid;grid-template-columns:1fr;gap:8px}
+  .typeMobileCard{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px;min-width:0}
+  .typeMobileHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .typeMobileHead .pill{font-size:12px;padding:5px 9px}
+  .typeMobileHead .typeCount{font-size:10px;color:var(--muted);font-weight:800;white-space:nowrap}
+  .typeMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .typeMetric{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 8px;min-width:0}
+  .typeMetric small{display:block;color:var(--muted);font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .typeMetric strong{display:block;margin-top:4px;font-size:14px;line-height:1.15;overflow-wrap:anywhere}
+  .typeMetric.moneyMetric{grid-column:1/-1}
+  .typeMetric.moneyMetric strong{color:var(--good);font-size:15px}
+  .highlightGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .highlightCard{padding:11px;border-radius:13px}
+  .highlightCard small{font-size:8.5px;line-height:1.2;margin-bottom:6px}
+  .highlightCard strong{font-size:14px;line-height:1.2}
+  .highlightCard span{font-size:9px;line-height:1.25}
+  .footerBrand{padding:18px 10px 84px;font-size:9px;gap:7px}
+  .footerBrand .dotline{width:24px}
+}
+
+@media(max-width:420px){
+  .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .filters .field:last-child{grid-column:1/-1}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi{min-height:86px;padding:11px 10px}
+  .kpi strong{font-size:20px}
+  .chart{height:205px}
+  .typeMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .highlightGrid{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:345px){
+  .filters{grid-template-columns:1fr}
+  .filters .field:last-child{grid-column:auto}
+  .kpis{grid-template-columns:1fr}
+  .highlightGrid{grid-template-columns:1fr}
+  .typeMetrics{grid-template-columns:1fr 1fr}
+  .typeMetric.moneyMetric{grid-column:1/-1}
 }
 
 </style>
@@ -526,7 +600,9 @@ function renderTipo(rows){
   rows.forEach(r=>{if(!groups[r.tipo]) groups[r.tipo]={n:0,p:0,k:0,v:0}; const g=groups[r.tipo]; g.n++; if(Number.isFinite(r.pessoas)){g.p+=r.pessoas; g.k++;} if(Number.isFinite(r.valor)) g.v+=r.valor;});
   const entries=Object.entries(groups);
   if(!entries.length) return document.getElementById('resumoTipo').innerHTML='<div class="empty">Sem dados.</div>';
-  document.getElementById('resumoTipo').innerHTML=`<div class="tablewrap"><table style="min-width:560px"><thead><tr><th>Tipo</th><th>Cultos</th><th>Pessoas</th><th>Média</th><th>Entradas</th></tr></thead><tbody>${entries.map(([k,g])=>`<tr><td><span class="pill">${k}</span></td><td>${g.n}</td><td>${g.p}</td><td>${g.k?(g.p/g.k).toFixed(1).replace('.',','):'—'}</td><td class="money">${fmtBRL(g.v)}</td></tr>`).join('')}</tbody></table></div>`;
+  const desktop=`<div class="desktopTypeTable"><div class="tablewrap"><table style="min-width:560px"><thead><tr><th>Tipo</th><th>Cultos</th><th>Pessoas</th><th>Média</th><th>Entradas</th></tr></thead><tbody>${entries.map(([k,g])=>`<tr><td><span class="pill">${escapeHtml(k||'Não informado')}</span></td><td>${g.n}</td><td>${g.p}</td><td>${g.k?(g.p/g.k).toFixed(1).replace('.',','):'—'}</td><td class="money">${fmtBRL(g.v)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const mobile=`<div class="typeMobileGrid">${entries.map(([k,g])=>`<div class="typeMobileCard"><div class="typeMobileHead"><span class="pill">${escapeHtml(k||'Não informado')}</span><span class="typeCount">${g.n} culto${g.n===1?'':'s'}</span></div><div class="typeMetrics"><div class="typeMetric"><small>Pessoas</small><strong>${g.p.toLocaleString('pt-BR')}</strong></div><div class="typeMetric"><small>Média</small><strong>${g.k?(g.p/g.k).toFixed(1).replace('.',','):'—'}</strong></div><div class="typeMetric"><small>Cultos</small><strong>${g.n}</strong></div><div class="typeMetric moneyMetric"><small>Entradas</small><strong>${fmtBRL(g.v)}</strong></div></div></div>`).join('')}</div>`;
+  document.getElementById('resumoTipo').innerHTML=desktop+mobile;
 }
 function renderDestaques(rows){
   const att=rows.filter(x=>Number.isFinite(x.pessoas)).sort((a,b)=>b.pessoas-a.pessoas)[0];
@@ -534,12 +610,12 @@ function renderDestaques(rows){
   const vis=rows.filter(x=>Number.isFinite(x.visitantes)).sort((a,b)=>b.visitantes-a.visitantes)[0];
   const live=rows.filter(x=>Number.isFinite(x.visualizacoes)).sort((a,b)=>b.visualizacoes-a.visualizacoes)[0];
   const items=[
-    ['Maior público',att?`${att.pessoas} pessoas • ${fmtDate(att.data)}`:'—'],
-    ['Maior entrada',fin?`${fmtBRL(fin.valor)} • ${fmtDate(fin.data)}`:'—'],
-    ['Mais visitantes',vis?`${vis.visitantes} • ${fmtDate(vis.data)}`:'—'],
-    ['Maior audiência online',live?`${live.visualizacoes} visualizações • ${fmtDate(live.data)}`:'—']
+    {label:'Maior público',value:att?`${att.pessoas} pessoas`:'—',meta:att?fmtDate(att.data):''},
+    {label:'Maior entrada',value:fin?fmtBRL(fin.valor):'—',meta:fin?fmtDate(fin.data):''},
+    {label:'Mais visitantes',value:vis?`${vis.visitantes} visitantes`:'—',meta:vis?fmtDate(vis.data):''},
+    {label:'Maior audiência online',value:live?`${live.visualizacoes} visualizações`:'—',meta:live?fmtDate(live.data):''}
   ];
-  document.getElementById('destaques').innerHTML=items.map(([a,b])=>`<div style="display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid ${css('--line')}"><span class="muted">${a}</span><strong style="text-align:right">${b}</strong></div>`).join('');
+  document.getElementById('destaques').innerHTML=`<div class="highlightGrid">${items.map(i=>`<div class="highlightCard"><small>${i.label}</small><strong>${i.value}</strong>${i.meta?`<span>${i.meta}</span>`:''}</div>`).join('')}</div>`;
 }
 async function saveForm(e){
   e.preventDefault();
