@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IP LUS • Painel da Liderança</title>
-<!-- build: mobile-v3-responsive-2026-09-27 -->
+<!-- build: mobile-v4-responsive-2026-09-28 -->
 <meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
@@ -165,76 +165,109 @@ th{background:var(--card2);color:var(--muted);position:sticky;top:0;z-index:1}
 }
 
 
-/* ===== Home mobile v3 • responsividade refinada ===== */
-html,body{max-width:100%;overflow-x:hidden}
-.card,.kpi,.grid2>*{min-width:0}
-.desktopTypeTable{display:block}
-.typeMobileGrid{display:none}
-.highlightGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* ===== Mobile v4 • layout realmente mobile-first ===== */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{min-width:280px}
+img,svg{max-width:100%}
+.card,.kpi,.grid2>*,.field,.brand,.recordsHeader>*{min-width:0}
+.desktopTypeTable,.recordsDesktop{display:block}
+.typeMobileGrid,.recordsMobileGrid{display:none}
+.highlightGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .highlightCard{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:13px;min-width:0}
 .highlightCard small{display:block;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
-.highlightCard strong{display:block;font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.highlightCard strong{display:block;font-size:15px;line-height:1.25;overflow-wrap:break-word;font-variant-numeric:tabular-nums}
 .highlightCard span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.recordsHeader{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.recordsSearch{min-width:260px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card2);color:var(--ink)}
 
 @media(max-width:800px){
-  main{width:100%;max-width:100%;padding-left:10px;padding-right:10px}
-  #dash{width:100%;max-width:100%;overflow:hidden}
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom));overscroll-behavior-y:none}
+  header{padding-top:max(10px,env(safe-area-inset-top));padding-right:max(10px,env(safe-area-inset-right));padding-left:max(10px,env(safe-area-inset-left))}
+  .headrow{width:100%;min-width:0}
+  .brandwrap{overflow:hidden}
+  .brand h1{font-size:clamp(13px,4.15vw,16px);line-height:1.2}
+  .cloudbar{min-width:0;max-width:100%;overflow:hidden}
+  .cloudStatus{min-width:0;max-width:clamp(118px,52vw,210px)}
+  main{width:100%;max-width:100%;padding-top:10px;padding-right:max(10px,env(safe-area-inset-right));padding-bottom:118px;padding-left:max(10px,env(safe-area-inset-left))}
+  .panel,#dash{width:100%;max-width:100%;min-width:0}
   #dash>.notice,#dash>.filters,#dash>.kpis,#dash>.grid2{width:100%;max-width:100%}
-  .notice{box-shadow:none}
-  .filters{grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
-  .filters .field{min-width:0}
+  .notice{box-shadow:none;margin-bottom:9px;padding:9px 11px;font-size:10px;line-height:1.38}
+  .filters{grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;padding:9px;gap:8px}
   .filters .field:last-child{grid-column:1/-1}
-  .filters .field:last-child .btn{min-height:42px}
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
-  .kpi{padding:12px 11px;min-height:90px;display:flex;flex-direction:column;justify-content:center}
+  .filters .field:last-child .btn{min-height:44px}
+  .field input,.field select,.field textarea{max-width:100%;min-height:48px;padding:11px 12px;font-size:16px}
+  .field textarea{min-height:96px;resize:vertical}
+  .btn,.iconbtn{min-height:44px;touch-action:manipulation}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch}
+  .kpi{padding:11px 10px;min-height:88px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
   .kpi small{font-size:9px;line-height:1.2}
-  .kpi strong{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;font-size:clamp(19px,6vw,25px);line-height:1.08}
+  .kpi strong{display:block;width:100%;white-space:nowrap;overflow:visible;text-overflow:clip;font-size:clamp(18px,6vw,25px);line-height:1.08;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
   .kpi .sub{font-size:8.5px;line-height:1.25}
+  .kpiMoney{grid-column:1/-1;min-height:82px}
+  .kpiMoney strong{font-size:clamp(21px,7vw,29px)}
   .grid2{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
   .card{width:100%;max-width:100%;overflow:hidden;padding:13px}
-  .card h3{font-size:17px;line-height:1.2}
-  .card p{font-size:11px;line-height:1.35;margin-bottom:10px}
+  .card h3{font-size:16px;line-height:1.2}
+  .card p{font-size:11px;line-height:1.4;margin-bottom:10px}
   .chart{height:220px;width:100%;max-width:100%;overflow:hidden}
   .chart svg{display:block;width:100%;height:100%;max-width:100%}
-  .desktopTypeTable{display:none}
-  .typeMobileGrid{display:grid;grid-template-columns:1fr;gap:8px}
-  .typeMobileCard{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px;min-width:0}
-  .typeMobileHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-  .typeMobileHead .pill{font-size:12px;padding:5px 9px}
-  .typeMobileHead .typeCount{font-size:10px;color:var(--muted);font-weight:800;white-space:nowrap}
-  .typeMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-  .typeMetric{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 8px;min-width:0}
-  .typeMetric small{display:block;color:var(--muted);font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .typeMetric strong{display:block;margin-top:4px;font-size:14px;line-height:1.15;overflow-wrap:anywhere}
-  .typeMetric.moneyMetric{grid-column:1/-1}
-  .typeMetric.moneyMetric strong{color:var(--good);font-size:15px}
+  .desktopTypeTable,.recordsDesktop{display:none}
+  .typeMobileGrid,.recordsMobileGrid{display:grid;grid-template-columns:1fr;gap:8px}
+  .typeMobileCard,.recordMobileCard{border:1px solid var(--line);background:var(--card2);border-radius:14px;padding:12px;min-width:0}
+  .typeMobileHead,.recordMobileHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;min-width:0}
+  .typeMobileHead .pill,.recordMobileHead .pill{font-size:12px;padding:5px 9px;max-width:70%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .typeMobileHead .typeCount,.recordMobileHead strong{font-size:10px;color:var(--muted);font-weight:800;white-space:nowrap}
+  .typeMetrics,.recordMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .typeMetric,.recordMetric{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 8px;min-width:0}
+  .typeMetric small,.recordMetric small{display:block;color:var(--muted);font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .typeMetric strong,.recordMetric strong{display:block;margin-top:4px;font-size:14px;line-height:1.15;overflow-wrap:break-word;font-variant-numeric:tabular-nums}
+  .typeMetric.moneyMetric,.recordMetric.moneyMetric{grid-column:1/-1}
+  .typeMetric.moneyMetric strong,.recordMetric.moneyMetric strong{color:var(--good);font-size:15px}
+  .recordDetails{margin-top:9px;border-top:1px solid var(--line);padding-top:8px}
+  .recordDetails summary{cursor:pointer;color:var(--muted);font-size:11px;font-weight:800;min-height:36px;display:flex;align-items:center}
+  .recordDetailGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:5px}
+  .recordDetailGrid>div{min-width:0}
+  .recordDetailGrid small{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase}
+  .recordDetailGrid span{display:block;margin-top:3px;font-size:12px;overflow-wrap:anywhere}
+  .recordDetailGrid .wide{grid-column:1/-1}
+  .recordMobileActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .recordMobileActions .iconbtn{width:100%;font-weight:800}
   .highlightGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .highlightCard{padding:11px;border-radius:13px}
+  .highlightCard{padding:11px;border-radius:13px;overflow:hidden}
   .highlightCard small{font-size:8.5px;line-height:1.2;margin-bottom:6px}
-  .highlightCard strong{font-size:14px;line-height:1.2}
+  .highlightCard strong{font-size:clamp(13px,4.2vw,16px);line-height:1.2}
   .highlightCard span{font-size:9px;line-height:1.25}
-  .footerBrand{padding:18px 10px 84px;font-size:9px;gap:7px}
+  .recordsHeader{align-items:stretch;gap:10px}
+  .recordsHeader>div{width:100%}
+  .recordsSearch{width:100%;min-width:0;min-height:48px;font-size:16px}
+  .formfooter{bottom:calc(76px + env(safe-area-inset-bottom));margin-right:-4px;margin-left:-4px;padding:9px 4px 4px;border-top:1px solid var(--line)}
+  .mobileBottomNav{left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:max(8px,env(safe-area-inset-bottom));padding-bottom:6px}
+  .mobileBottomNav button{min-width:0;min-height:56px;padding:6px 2px}
+  .footerBrand{padding:18px 10px 8px;font-size:9px;gap:7px}
   .footerBrand .dotline{width:24px}
 }
 
 @media(max-width:420px){
-  .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .filters .field:last-child{grid-column:1/-1}
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .kpi{min-height:86px;padding:11px 10px}
-  .kpi strong{font-size:20px}
-  .chart{height:205px}
-  .typeMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .highlightGrid{grid-template-columns:1fr 1fr}
+  .kpi{min-height:84px;padding:10px 9px}
+  .kpi strong{font-size:clamp(17px,5.8vw,21px)}
+  .kpiMoney strong{font-size:clamp(21px,7vw,27px)}
+  .chart{height:210px}
+  .typeMetrics,.recordMetrics{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
 @media(max-width:345px){
   .filters{grid-template-columns:1fr}
   .filters .field:last-child{grid-column:auto}
-  .kpis{grid-template-columns:1fr}
+  .kpis{gap:7px}
+  .kpi{min-height:82px;padding:9px 8px}
+  .kpi small{font-size:8.5px}
+  .kpi strong{font-size:18px}
+  .kpiMoney strong{font-size:23px}
   .highlightGrid{grid-template-columns:1fr}
-  .typeMetrics{grid-template-columns:1fr 1fr}
-  .typeMetric.moneyMetric{grid-column:1/-1}
+  .typeMetrics,.recordMetrics{grid-template-columns:1fr 1fr}
+  .typeMetric.moneyMetric,.recordMetric.moneyMetric{grid-column:1/-1}
+  .mobileBottomNav button{font-size:9px}
+  .mobileBottomNav button .ico{font-size:19px}
 }
 
 </style>
@@ -301,8 +334,8 @@ html,body{max-width:100%;overflow-x:hidden}
       <div class="kpi"><small>Total de pessoas</small><strong id="kPessoas">0</strong><div class="sub">somatório das presenças</div></div>
       <div class="kpi"><small>Média por culto</small><strong id="kMedia">0</strong><div class="sub">considera cultos com presença informada</div></div>
       <div class="kpi"><small>Visitantes</small><strong id="kVisitantes">0</strong><div class="sub">total de visitantes</div></div>
-      <div class="kpi"><small>Entradas / dízimos</small><strong id="kValor">R$ 0,00</strong><div class="sub">somente valores informados</div></div>
-      <div class="kpi"><small>Média financeira</small><strong id="kValorMedio">R$ 0,00</strong><div class="sub">por culto com valor informado</div></div>
+      <div class="kpi kpiMoney"><small>Entradas / dízimos</small><strong id="kValor">R$ 0,00</strong><div class="sub">somente valores informados</div></div>
+      <div class="kpi kpiMoney"><small>Média financeira</small><strong id="kValorMedio">R$ 0,00</strong><div class="sub">por culto com valor informado</div></div>
     </div>
 
     <div class="grid2">
@@ -376,9 +409,9 @@ html,body{max-width:100%;overflow-x:hidden}
 
   <section id="registros" class="panel">
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <div class="recordsHeader">
         <div><h3 style="margin:0">Base de registros</h3><p style="margin:3px 0 0" class="muted">Edite ou exclua um lançamento quando necessário.</p></div>
-        <input id="busca" oninput="renderTable()" placeholder="Buscar por nome, data ou tipo..." style="min-width:260px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card2);color:var(--ink)">
+        <input id="busca" class="recordsSearch" type="search" enterkeyhint="search" oninput="renderTable()" placeholder="Buscar por nome, data ou tipo..." aria-label="Buscar registros">
       </div>
       <div id="tableHolder"></div>
     </div>
@@ -512,7 +545,15 @@ function fmtDate(iso){ if(!iso) return "—"; const [y,m,d]=iso.split("-"); retu
 function monthLabel(key){ const [y,m]=key.split("-"); return new Date(Number(y), Number(m)-1, 1).toLocaleDateString("pt-BR", {month:"short", year:"2-digit"}).replace('.', ''); }
 function valOrNull(id,type="text"){ const el=document.getElementById(id), v=el.value.trim(); if(v==="") return null; return type==="number" ? Number(v.replace?.(",",".") ?? v) : v; }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-function goTab(id){ document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x.dataset.tab===id)); document.getElementById(id).classList.add('active'); const map={dash:'mnavDash',form:'mnavForm',registros:'mnavRegistros',cloud:'mnavCloud'}; document.querySelectorAll('.mobileBottomNav button').forEach(b=>b.classList.remove('active')); if(map[id]) document.getElementById(map[id])?.classList.add('active'); if(id==='registros') renderTable(); if(id==='dash') renderAll(); window.scrollTo({top:0,behavior:'smooth'}); }
+function goTab(id){
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>{const active=x.dataset.tab===id;x.classList.toggle('active',active);x.setAttribute('aria-selected',String(active));});
+  document.getElementById(id).classList.add('active');
+  const map={dash:'mnavDash',form:'mnavForm',registros:'mnavRegistros',cloud:'mnavCloud'};
+  document.querySelectorAll('.mobileBottomNav button').forEach(b=>{b.classList.remove('active');b.removeAttribute('aria-current');});
+  if(map[id]){const activeButton=document.getElementById(map[id]);activeButton?.classList.add('active');activeButton?.setAttribute('aria-current','page');}
+  if(id==='registros') renderTable(); if(id==='dash') renderAll(); window.scrollTo({top:0,behavior:'smooth'});
+}
 function setTheme(theme){
   document.body.classList.toggle('dark', theme==='dark');
   localStorage.setItem(THEME_KEY, theme);
@@ -563,8 +604,12 @@ function aggregateMonths(rows,key){
 }
 function chartEmpty(el,msg){ el.innerHTML=`<div class="empty">${msg}</div>`; }
 function svgBase(w,h){ return `<svg viewBox="0 0 ${w} ${h}" role="img">`; }
+function chartSize(el,desktopWidth){
+  const mobile=window.matchMedia('(max-width:800px)').matches;
+  return {w:mobile?Math.max(280,Math.round(el.clientWidth||320)):desktopWidth,h:mobile?210:260};
+}
 function drawLine(id,rows,key,color,money=false,suffix=''){
-  const el=document.getElementById(id), w=760,h=260,pL=45,pR=15,pT=18,pB=42, grid=css('--grid'), muted=css('--muted');
+  const el=document.getElementById(id), size=chartSize(el,760), w=size.w,h=size.h,pL=42,pR=12,pT=16,pB=38, grid=css('--grid'), muted=css('--muted');
   if(!rows.length) return chartEmpty(el,'Sem dados para este filtro.');
   const vals=rows.map(r=>Number(r[key])); let max=Math.max(...vals,1); max=Math.ceil(max*1.15);
   const x=i=>pL+(rows.length===1?0:(w-pL-pR)*i/(rows.length-1)); const y=v=>pT+(h-pT-pB)*(1-v/max);
@@ -576,7 +621,7 @@ function drawLine(id,rows,key,color,money=false,suffix=''){
   s+='</svg>'; el.innerHTML=s;
 }
 function drawBars(id,rows,key,color,money=false,tipper=null){
-  const el=document.getElementById(id), w=620,h=260,pL=56,pR=10,pT=18,pB=42, grid=css('--grid'), muted=css('--muted');
+  const el=document.getElementById(id), size=chartSize(el,620), w=size.w,h=size.h,pL=50,pR=8,pT=16,pB=38, grid=css('--grid'), muted=css('--muted');
   if(!rows.length) return chartEmpty(el,'Sem valores financeiros informados.');
   let max=Math.max(...rows.map(r=>Number(r[key])),1); max=Math.ceil(max*1.12);
   const inner=w-pL-pR, gap=6, bw=Math.max(8,(inner/rows.length)-gap), y=v=>pT+(h-pT-pB)*(1-v/max);
@@ -586,7 +631,7 @@ function drawBars(id,rows,key,color,money=false,tipper=null){
   s+='</svg>'; el.innerHTML=s;
 }
 function drawBarsSimple(id,rows,color,money=false,tipper=null){
-  const el=document.getElementById(id), w=620,h=260,pL=56,pR=10,pT=18,pB=42, grid=css('--grid'), muted=css('--muted');
+  const el=document.getElementById(id), size=chartSize(el,620), w=size.w,h=size.h,pL=50,pR=8,pT=16,pB=38, grid=css('--grid'), muted=css('--muted');
   if(!rows.length) return chartEmpty(el,'Sem dados mensais para este filtro.');
   let max=Math.max(...rows.map(r=>Number(r.value)),1); max=Math.ceil(max*1.12);
   const inner=w-pL-pR, gap=14, bw=Math.max(26,(inner/rows.length)-gap), y=v=>pT+(h-pT-pB)*(1-v/max);
@@ -654,7 +699,10 @@ function renderTable(){
   const rows=[...data].sort((a,b)=>(b.data||'').localeCompare(a.data||'')).filter(r=>JSON.stringify(r).toLowerCase().includes(q));
   const holder=document.getElementById('tableHolder');
   if(!rows.length) return holder.innerHTML='<div class="empty">Nenhum registro encontrado.</div>';
-  holder.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Pessoas</th><th>Visitantes</th><th>Pastores</th><th>Entrada</th><th>Abriu</th><th>Pregador(a)</th><th>Live</th><th>Observação</th><th>Ações</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${fmtDate(r.data)}</strong></td><td><span class="pill">${escapeHtml(r.tipo||'—')}</span></td><td>${r.pessoas??'—'}</td><td>${r.visitantes??'—'}</td><td>${r.pastores??'—'}</td><td class="money">${fmtBRL(r.valor)}</td><td>${escapeHtml(r.abriu||'—')}</td><td>${escapeHtml(r.pregador||'—')}</td><td>${r.visualizacoes??'—'}</td><td>${escapeHtml(r.obs||'—')}</td><td>${canWrite()?`<div class="row-actions"><button class="iconbtn" onclick="editRow('${r.id}')">Editar</button><button class="iconbtn" onclick="deleteRow('${r.id}')">Excluir</button></div>`:'<span class="roleBadge">Somente leitura</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+  const actions=r=>{const id=JSON.stringify(String(r.id)).replace(/</g,'\\u003c').replace(/'/g,'\\u0027');return canWrite()?`<div class="row-actions recordMobileActions"><button class="iconbtn" type="button" onclick='editRow(${id})'>Editar</button><button class="iconbtn" type="button" onclick='deleteRow(${id})'>Excluir</button></div>`:'<span class="roleBadge">Somente leitura</span>';};
+  const desktop=`<div class="recordsDesktop"><div class="tablewrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Pessoas</th><th>Visitantes</th><th>Pastores</th><th>Entrada</th><th>Abriu</th><th>Pregador(a)</th><th>Live</th><th>Observação</th><th>Ações</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${fmtDate(r.data)}</strong></td><td><span class="pill">${escapeHtml(r.tipo||'—')}</span></td><td>${escapeHtml(r.pessoas??'—')}</td><td>${escapeHtml(r.visitantes??'—')}</td><td>${escapeHtml(r.pastores??'—')}</td><td class="money">${fmtBRL(r.valor)}</td><td>${escapeHtml(r.abriu||'—')}</td><td>${escapeHtml(r.pregador||'—')}</td><td>${escapeHtml(r.visualizacoes??'—')}</td><td>${escapeHtml(r.obs||'—')}</td><td>${actions(r)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  const mobile=`<div class="recordsMobileGrid">${rows.map(r=>`<article class="recordMobileCard"><div class="recordMobileHead"><span class="pill">${escapeHtml(r.tipo||'Não informado')}</span><strong>${fmtDate(r.data)}</strong></div><div class="recordMetrics"><div class="recordMetric"><small>Pessoas</small><strong>${escapeHtml(r.pessoas??'—')}</strong></div><div class="recordMetric"><small>Visitantes</small><strong>${escapeHtml(r.visitantes??'—')}</strong></div><div class="recordMetric"><small>Pastores</small><strong>${escapeHtml(r.pastores??'—')}</strong></div><div class="recordMetric moneyMetric"><small>Entrada</small><strong>${fmtBRL(r.valor)}</strong></div></div><details class="recordDetails"><summary>Ver detalhes do culto</summary><div class="recordDetailGrid"><div><small>Abriu</small><span>${escapeHtml(r.abriu||'—')}</span></div><div><small>Pregador(a)</small><span>${escapeHtml(r.pregador||'—')}</span></div><div><small>Live</small><span>${escapeHtml(r.visualizacoes??'—')}</span></div><div class="wide"><small>Observação</small><span>${escapeHtml(r.obs||'—')}</span></div></div></details>${actions(r)}</article>`).join('')}</div>`;
+  holder.innerHTML=desktop+mobile;
 }
 function clearFilters(){ ['fDe','fAte','fTipo','fPregador','fMeio'].forEach(id=>document.getElementById(id).value=''); renderAll(); }
 function exportCSV(){
@@ -785,7 +833,12 @@ async function installApp(){
 }
 
 function download(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},400); }
-document.addEventListener('DOMContentLoaded',async()=>{ if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(()=>{}); initTheme(); populatePregadores(); renderAll(); renderTable(); refreshCloudPanel(); await initCloud(); });
+let resizeTimer=null;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(document.getElementById('dash')?.classList.contains('active'))renderAll();},140);},{passive:true});
+document.addEventListener('DOMContentLoaded',async()=>{
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{});
+  initTheme(); populatePregadores(); renderAll(); renderTable(); refreshCloudPanel(); await initCloud();
+});
 </script>
 </body>
 </html>

@@ -16,7 +16,14 @@ ARQUIVOS
 - icon-192.png / icon-512.png: ícones
 
 
-VERSÃO v2 CORRIGIDA
+VERSÃO MOBILE v4
+- Home reorganizada para telas Android de 320 a 430 px, sem rolagem horizontal.
+- KPIs financeiros e destaques ajustados para exibir valores completos.
+- Resumo por tipo e Registros convertidos em cartões no celular.
+- Formulário, Liderança e navegação inferior ajustados para toque e safe areas.
+- Service worker atualizado sem armazenar chamadas de dados/autenticação do Supabase.
+
+BASE HISTÓRICA PRESERVADA
 - 11/09/2026 corrigido para R$ 3,50.
 - 25/08/2026 mantido como valor não informado (não convertido em zero).
 - Incluídos 31/05 e registros de 02/06, 05/06, 07/06, 09/06 e 12/06.
