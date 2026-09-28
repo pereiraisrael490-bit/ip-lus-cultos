@@ -1,4 +1,4 @@
-const CACHE = 'ip-lus-mobile-v4';
+const CACHE = 'ip-lus-mobile-v5';
 const APP_SHELL = [
   './',
   './index.html',

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IP LUS • Painel da Liderança</title>
-<!-- build: mobile-v4-responsive-2026-09-28 -->
+<!-- build: mobile-v5-scroll-fix-2026-09-28 -->
 <meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
@@ -166,7 +166,7 @@ th{background:var(--card2);color:var(--muted);position:sticky;top:0;z-index:1}
 
 
 /* ===== Mobile v4 • layout realmente mobile-first ===== */
-html,body{width:100%;max-width:100%;overflow-x:hidden}
+html,body{width:100%;max-width:100%;overflow-x:clip}
 body{min-width:280px}
 img,svg{max-width:100%}
 .card,.kpi,.grid2>*,.field,.brand,.recordsHeader>*{min-width:0}
@@ -181,7 +181,7 @@ img,svg{max-width:100%}
 .recordsSearch{min-width:260px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card2);color:var(--ink)}
 
 @media(max-width:800px){
-  body{padding-bottom:calc(92px + env(safe-area-inset-bottom));overscroll-behavior-y:none}
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
   header{padding-top:max(10px,env(safe-area-inset-top));padding-right:max(10px,env(safe-area-inset-right));padding-left:max(10px,env(safe-area-inset-left))}
   .headrow{width:100%;min-width:0}
   .brandwrap{overflow:hidden}

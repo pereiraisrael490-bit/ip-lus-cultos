@@ -23,6 +23,10 @@ VERSÃO MOBILE v4
 - Formulário, Liderança e navegação inferior ajustados para toque e safe areas.
 - Service worker atualizado sem armazenar chamadas de dados/autenticação do Supabase.
 
+CORREÇÃO MOBILE v5
+- Restaurada a rolagem vertical por gesto no Android mantendo o bloqueio do overflow horizontal.
+- Cache do PWA renovado para entregar a correção também ao app instalado.
+
 BASE HISTÓRICA PRESERVADA
 - 11/09/2026 corrigido para R$ 3,50.
 - 25/08/2026 mantido como valor não informado (não convertido em zero).
