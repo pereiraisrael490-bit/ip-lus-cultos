@@ -1,0 +1,61 @@
+/* Gráficos v6: leitura por toque e tela ampliada. */
+.chartToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:18px 0 12px}
+.chartToolbar h2{margin:0;font-size:18px;letter-spacing:-.02em}
+.chartToolbar p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.chartPeriod{display:flex;border:1px solid var(--line);border-radius:12px;padding:3px;background:var(--card);gap:3px}
+.chartPeriod button{min-height:44px;padding:8px 14px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:12px;font-weight:800;cursor:pointer}
+.chartPeriod button[aria-pressed="true"]{background:var(--primary);color:var(--bg)}
+.chartCardHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.chartCardHead h3{margin:0;line-height:1.3}
+.chartExpand{flex-shrink:0;border:1px solid var(--line);border-radius:10px;background:var(--card2);color:var(--ink);min-height:44px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer}
+.chartExpand:focus-visible,.chartPeriod button:focus-visible,.chartDialog button:focus-visible{outline:3px solid var(--good);outline-offset:2px}
+.chartCard .chart{height:240px;overflow:hidden}
+.chartCard .chart svg{display:block;width:100%;height:100%;overflow:hidden}
+.chartReadout{min-height:36px;margin-top:8px;padding:8px 10px;background:var(--card2);border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.chartReadout strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.chartPoint{cursor:pointer;outline:none}
+.chartPoint:focus .chartMark{stroke:var(--good);stroke-width:3}
+.chartDialog{padding:0;border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--ink);width:min(1040px,calc(100vw - 32px));max-width:none;max-height:90dvh;box-shadow:var(--shadow)}
+.chartDialog::backdrop{background:rgba(0,0,0,.7)}
+body.chartDialogOpen{overflow:hidden}
+.chartDialogHead{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px;background:var(--card);border-bottom:1px solid var(--line)}
+.chartDialogHead h2{font-size:18px;line-height:1.3;margin:0}
+.chartDialogHead p{font-size:12px;line-height:1.4;color:var(--muted);margin:5px 0 0}
+.chartDialogBody{padding:16px}
+.chartZoom{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chartZoom label{font-size:12px;font-weight:800}
+.chartZoom select{min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--card2);color:var(--ink);padding:8px 10px;font:inherit;font-size:14px}
+.chartZoom span{color:var(--muted);font-size:11px}
+.chartViewport{width:100%;overflow:auto;overscroll-behavior-x:contain;border:1px solid var(--line);border-radius:12px;background:var(--card2);padding:8px}
+.chartExpandedCanvas{max-width:none;position:relative}
+.chartExpandedCanvas svg{display:block;width:100%;height:100%;max-width:none}
+.chartData{margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.chartData summary{min-height:44px;cursor:pointer;font-size:13px;font-weight:800;display:flex;align-items:center}
+.chartDataRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:12px}
+.chartDataRow span{overflow-wrap:anywhere;color:var(--muted)}
+.chartDataRow strong{font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Evita reticências em valores mesmo no desktop. */
+.kpi strong{font-size:clamp(19px,2.05vw,29px);white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+@media(max-width:800px){
+  .chartToolbar{margin:16px 0 10px;gap:10px}
+  .chartToolbar h2{font-size:17px}
+  .chartToolbar p{font-size:11px;line-height:1.4}
+  .chartPeriod{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .chartPeriod button{padding:8px 4px;font-size:12px}
+  .chartCard{padding:14px 12px;border-radius:16px}
+  .chartCardHead{align-items:center;gap:8px}
+  .chartCardHead h3{font-size:15px}
+  .chartExpand{padding:8px 9px;min-width:74px}
+  .chartCard p{font-size:11px;line-height:1.5;margin-bottom:8px}
+  .chartCard .chart{height:220px}
+  .chartReadout{font-size:11px;min-height:40px;margin-top:4px}
+  .chartDialog{width:100%;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0}
+  .chartDialogHead{padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 12px max(12px,env(safe-area-inset-left))}
+  .chartDialogHead h2{font-size:17px}
+  .chartDialogBody{padding:12px max(12px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+  .chartZoom{align-items:center}
+  .chartZoom span{width:100%;line-height:1.4}
+  .kpi strong{font-size:clamp(18px,6vw,25px)}
+  .kpiMoney strong{font-size:clamp(21px,7vw,29px);white-space:nowrap}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}

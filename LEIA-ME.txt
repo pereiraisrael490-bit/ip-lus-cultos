@@ -31,3 +31,12 @@ BASE HISTÓRICA PRESERVADA
 - 11/09/2026 corrigido para R$ 3,50.
 - 25/08/2026 mantido como valor não informado (não convertido em zero).
 - Incluídos 31/05 e registros de 02/06, 05/06, 07/06, 09/06 e 12/06.
+
+
+ATUALIZAÇÃO V6 — GRÁFICOS MOBILE (06/10/2026)
+- Visão semanal no celular com alternativa por culto ou mês.
+- Presença agregada mostra média por culto; financeiro agrega soma.
+- Resumos mensais em barras horizontais, meses curtos e valores visíveis.
+- Ampliar abre tela com zoom, rolagem lateral e lista dos valores.
+- Valores consultáveis por toque; Voltar/Fechar restaura a rolagem da Home.
+- Cache PWA v6 inclui chart-layout.css e charts.js.

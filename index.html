@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IP LUS • Painel da Liderança</title>
-<!-- build: mobile-v5-scroll-fix-2026-09-28 -->
+<!-- build: mobile-v6-charts-2026-10-06 -->
 <meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
@@ -271,6 +271,7 @@ img,svg{max-width:100%}
 }
 
 </style>
+<link rel="stylesheet" href="chart-layout.css">
 </head>
 <body>
 <div class="app">
@@ -338,29 +339,40 @@ img,svg{max-width:100%}
       <div class="kpi kpiMoney"><small>Média financeira</small><strong id="kValorMedio">R$ 0,00</strong><div class="sub">por culto com valor informado</div></div>
     </div>
 
+    <section class="chartToolbar" aria-label="Visualização dos gráficos">
+      <div><h2>Acompanhe o período</h2><p>Escolha o nível de detalhe dos gráficos de evolução.</p></div>
+      <div class="chartPeriod" role="group" aria-label="Agrupar evolução">
+        <button type="button" data-chart-period="cult" aria-pressed="false" onclick="setChartPeriod('cult')">Por culto</button>
+        <button type="button" data-chart-period="week" aria-pressed="false" onclick="setChartPeriod('week')">Semanal</button>
+        <button type="button" data-chart-period="month" aria-pressed="false" onclick="setChartPeriod('month')">Mensal</button>
+      </div>
+    </section>
     <div class="grid2">
-      <div class="card">
-        <h3>Evolução de presença</h3>
+      <div class="card chartCard">
+        <div class="chartCardHead"><h3>Evolução de presença</h3><button class="chartExpand" type="button" data-chart="chartPresenca" aria-haspopup="dialog">⤢ Ampliar</button></div>
         <p>Número de pessoas por culto ao longo do tempo.</p>
         <div id="chartPresenca" class="chart"></div>
+        <div id="chartPresencaReadout" class="chartReadout" aria-live="polite"></div>
       </div>
-      <div class="card">
-        <h3>Entradas por culto</h3>
+      <div class="card chartCard">
+        <div class="chartCardHead"><h3>Entradas por culto</h3><button class="chartExpand" type="button" data-chart="chartFinanceiro" aria-haspopup="dialog">⤢ Ampliar</button></div>
         <p>Valores financeiros informados em cada registro.</p>
         <div id="chartFinanceiro" class="chart"></div>
+        <div id="chartFinanceiroReadout" class="chartReadout" aria-live="polite"></div>
       </div>
     </div>
-
     <div class="grid2">
-      <div class="card">
-        <h3>Resumo mensal de presença</h3>
-        <p>Soma de pessoas por mês para comparar a evolução mensal.</p>
+      <div class="card chartCard">
+        <div class="chartCardHead"><h3>Presença por mês</h3><button class="chartExpand" type="button" data-chart="chartMesPresenca" aria-haspopup="dialog">⤢ Ampliar</button></div>
+        <p>Total de pessoas registradas em cada mês.</p>
         <div id="chartMesPresenca" class="chart"></div>
+        <div id="chartMesPresencaReadout" class="chartReadout" aria-live="polite"></div>
       </div>
-      <div class="card">
-        <h3>Resumo mensal financeiro</h3>
-        <p>Total de dízimos / entradas por mês.</p>
+      <div class="card chartCard">
+        <div class="chartCardHead"><h3>Entradas por mês</h3><button class="chartExpand" type="button" data-chart="chartMesFinanceiro" aria-haspopup="dialog">⤢ Ampliar</button></div>
+        <p>Total de dízimos / entradas em cada mês.</p>
         <div id="chartMesFinanceiro" class="chart"></div>
+        <div id="chartMesFinanceiroReadout" class="chartReadout" aria-live="polite"></div>
       </div>
     </div>
 
@@ -497,7 +509,20 @@ img,svg{max-width:100%}
 <footer class="footerBrand"><span class="dotline"></span> Controle digital de cultos • IP LUS • arquivo único <span class="dotline"></span></footer>
 </div>
 
+<dialog id="chartDialog" class="chartDialog" aria-labelledby="chartDialogTitle" aria-describedby="chartDialogDescription">
+  <div class="chartDialogHead">
+    <div><h2 id="chartDialogTitle">Gráfico ampliado</h2><p id="chartDialogDescription"></p></div>
+    <button class="chartExpand" type="button" onclick="closeChart()" aria-label="Fechar gráfico ampliado" autofocus>✕ Fechar</button>
+  </div>
+  <div class="chartDialogBody">
+    <div class="chartZoom"><label for="chartZoom">Ampliação</label><select id="chartZoom" onchange="setChartZoom(this.value)"><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option></select><span>Deslize o gráfico para os lados para explorar todos os dados.</span></div>
+    <div id="chartViewport" class="chartViewport" tabindex="0" aria-label="Área do gráfico ampliado, deslize para os lados"><div id="chartExpanded" class="chartExpandedCanvas"></div></div>
+    <div id="chartDialogReadout" class="chartReadout" aria-live="polite"></div>
+    <details id="chartDataDetails" class="chartData"><summary>Ver valores do gráfico</summary><div id="chartDataRows"></div></details>
+  </div>
+</dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="charts.js"></script>
 <script>
 const SEED = [{"id":"sem-data-01","data":null,"tipo":"Domingo","pessoas":17,"visitantes":0,"pastores":null,"valor":null,"meio":"Não informado","abriu":null,"pregador":null,"visualizacoes":null,"obs":"Registro parcial sem data visível. Mantido para conferência; não entra nos gráficos por data."},{"id":"sem-data-02","data":null,"tipo":"Outro","pessoas":null,"visitantes":null,"pastores":4,"valor":249.6,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Registro parcial sem data visível. Tipo e presença não informados; não entra nos gráficos por data."},{"id":"sem-data-03","data":null,"tipo":"Outro","pessoas":null,"visitantes":0,"pastores":2,"valor":6.0,"meio":"Não informado","abriu":"Deise","pregador":"Gabriela","visualizacoes":null,"obs":"Possível culto na rua; data e presença não visíveis. Registro parcial para conferência; não entra nos gráficos por data."},{"id":"2026-03-06","data":"2026-03-06","tipo":"Sexta","pessoas":15,"visitantes":1,"pastores":4,"valor":303.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Bete?","visualizacoes":null,"obs":"Pregador(a) lido como Beten/Bete; confirmar grafia."},{"id":"2026-03-08","data":"2026-03-08","tipo":"Domingo","pessoas":18,"visitantes":0,"pastores":4,"valor":135.0,"meio":"Não informado","abriu":"Douglas","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-03-13","data":"2026-03-13","tipo":"Sexta","pessoas":15,"visitantes":2,"pastores":4,"valor":72.0,"meio":"Não informado","abriu":"Missionária Luciana","pregador":"Cláudio","visualizacoes":null,"obs":""},{"id":"2026-03-15","data":"2026-03-15","tipo":"Domingo","pessoas":22,"visitantes":4,"pastores":4,"valor":143.25,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Daiane?","visualizacoes":null,"obs":"Pregador(a) lido como Diane/Daiane; confirmar grafia."},{"id":"2026-03-20","data":"2026-03-20","tipo":"Sexta","pessoas":15,"visitantes":0,"pastores":4,"valor":192.6,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastora Luciana?","visualizacoes":null,"obs":"Culto de Libertação. Pregador(a) a confirmar."},{"id":"2026-03-22","data":"2026-03-22","tipo":"Domingo","pessoas":23,"visitantes":0,"pastores":4,"valor":46.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Data anteriormente marcada como a confirmar; consolidada como 22/03/2026."},{"id":"2026-03-27","data":"2026-03-27","tipo":"Sexta","pessoas":14,"visitantes":0,"pastores":4,"valor":50.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Data anteriormente marcada como a confirmar; consolidada como 27/03/2026."},{"id":"2026-03-30","data":"2026-03-30","tipo":"Outro","pessoas":13,"visitantes":0,"pastores":4,"valor":null,"meio":"Não informado","abriu":null,"pregador":null,"visualizacoes":null,"obs":"Registro parcial. Tipo do culto, entrada, abertura e pregador(a) ainda a confirmar."},{"id":"2026-04-03","data":"2026-04-03","tipo":"Sexta","pessoas":19,"visitantes":0,"pastores":4,"valor":264.31,"meio":"Não informado","abriu":"Douglas","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Valor R$ 264,31 marcado como a confirmar no registro."},{"id":"2026-04-05","data":"2026-04-05","tipo":"Domingo","pessoas":23,"visitantes":3,"pastores":4,"valor":420.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-04-10","data":"2026-04-10","tipo":"Sexta","pessoas":7,"visitantes":0,"pastores":2,"valor":0.0,"meio":"Não informado","abriu":"Cloriela?","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":"Nome de quem abriu lido como Gloriela/Cloriela; confirmar. Observação original: não me recordo do valor."},{"id":"2026-04-12","data":"2026-04-12","tipo":"Domingo","pessoas":18,"visitantes":0,"pastores":4,"valor":410.0,"meio":"Não informado","abriu":"Gabriela","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-04-17","data":"2026-04-17","tipo":"Sexta","pessoas":12,"visitantes":0,"pastores":4,"valor":10.0,"meio":"Dinheiro","abriu":"Pastora Luciana","pregador":"Gabriela","visualizacoes":null,"obs":""},{"id":"2026-05-03","data":"2026-05-03","tipo":"Domingo","pessoas":19,"visitantes":0,"pastores":4,"valor":232.0,"meio":"Não informado","abriu":"Gabriela","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-05-08","data":"2026-05-08","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Deane","pregador":"Pastora Luciana","visualizacoes":null,"obs":"Campanha — 1º dia."},{"id":"2026-05-10","data":"2026-05-10","tipo":"Domingo","pessoas":25,"visitantes":0,"pastores":4,"valor":450.0,"meio":"Dinheiro","abriu":"Pastora Luciana","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":"Santa Ceia."},{"id":"2026-05-15","data":"2026-05-15","tipo":"Sexta","pessoas":21,"visitantes":3,"pastores":4,"valor":120.0,"meio":"PIX","abriu":"Pastora Luciana","pregador":"Gabriela","visualizacoes":null,"obs":""},{"id":"2026-05-17","data":"2026-05-17","tipo":"Domingo","pessoas":22,"visitantes":1,"pastores":4,"valor":32.0,"meio":"Dinheiro","abriu":"Deise","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Culto da Família."},{"id":"2026-05-22","data":"2026-05-22","tipo":"Sexta","pessoas":21,"visitantes":4,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Pastora Gizélia","pregador":"Douglas","visualizacoes":null,"obs":""},{"id":"2026-05-24","data":"2026-05-24","tipo":"Domingo","pessoas":23,"visitantes":0,"pastores":4,"valor":102.0,"meio":"Não informado","abriu":"Pastor Wellington","pregador":null,"visualizacoes":null,"obs":"Pregador(a) não aparece na foto."},{"id":"2026-05-29","data":"2026-05-29","tipo":"Sexta","pessoas":21,"visitantes":3,"pastores":4,"valor":152.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Ivone","visualizacoes":null,"obs":""},{"id":"2026-05-31","data":"2026-05-31","tipo":"Domingo","pessoas":19,"visitantes":0,"pastores":4,"valor":120.0,"meio":"Não informado","abriu":"Pastora Gizélia","pregador":"Deane","visualizacoes":null,"obs":""},{"id":"2026-06-02","data":"2026-06-02","tipo":"Terça","pessoas":14,"visitantes":0,"pastores":null,"valor":null,"meio":"Não contado","abriu":null,"pregador":null,"visualizacoes":null,"obs":"Entrada/dízimo anotado como não contado; demais campos não informados."},{"id":"2026-06-05","data":"2026-06-05","tipo":"Outro","pessoas":20,"visitantes":0,"pastores":null,"valor":100.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"No manuscrito consta 'culto de domingo', embora 05/06/2026 tenha sido sexta-feira; inconsistência preservada para conferência."},{"id":"2026-06-07","data":"2026-06-07","tipo":"Domingo","pessoas":20,"visitantes":0,"pastores":4,"valor":225.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Gabriela","visualizacoes":null,"obs":"Culto de Primícias."},{"id":"2026-06-09","data":"2026-06-09","tipo":"Terça","pessoas":13,"visitantes":0,"pastores":3,"valor":7.0,"meio":"Não informado","abriu":"Deise","pregador":"Douglas","visualizacoes":null,"obs":"Culto de Oração."},{"id":"2026-06-12","data":"2026-06-12","tipo":"Sexta","pessoas":18,"visitantes":0,"pastores":4,"valor":100.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Deane","visualizacoes":null,"obs":""},{"id":"2026-06-14","data":"2026-06-14","tipo":"Domingo","pessoas":13,"visitantes":0,"pastores":4,"valor":175.0,"meio":"Não informado","abriu":"Gabriela","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Santa Ceia."},{"id":"2026-06-16","data":"2026-06-16","tipo":"Terça","pessoas":9,"visitantes":0,"pastores":2,"valor":null,"meio":"Não contado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Culto de Intercessão. Entrada não foi contada."},{"id":"2026-06-19","data":"2026-06-19","tipo":"Sexta","pessoas":15,"visitantes":0,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-06-21","data":"2026-06-21","tipo":"Domingo","pessoas":16,"visitantes":0,"pastores":4,"valor":25.0,"meio":"Misto","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Culto da Família. Entrada anotada como R$ 5,00 + R$ 20,00 via PIX."},{"id":"2026-06-23","data":"2026-06-23","tipo":"Terça","pessoas":13,"visitantes":0,"pastores":3,"valor":0.0,"meio":"Não contado","abriu":"Pastora Luciana","pregador":"Beth","visualizacoes":null,"obs":"Observação original: não contei."},{"id":"2026-06-26","data":"2026-06-26","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":100.0,"meio":"Não informado","abriu":"Pastor Douglas","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-06-28","data":"2026-06-28","tipo":"Domingo","pessoas":23,"visitantes":3,"pastores":4,"valor":18.0,"meio":"Não informado","abriu":"Deane","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-06-30","data":"2026-06-30","tipo":"Terça","pessoas":13,"visitantes":0,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Gabriela","visualizacoes":null,"obs":""},{"id":"2026-07-03","data":"2026-07-03","tipo":"Sexta","pessoas":20,"visitantes":4,"pastores":null,"valor":250.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Júnio?","visualizacoes":null,"obs":"Pregador(a) lido como Júnio; confirmar grafia. Pastores presentes não informado."},{"id":"2026-07-05","data":"2026-07-05","tipo":"Domingo","pessoas":23,"visitantes":5,"pastores":4,"valor":315.6,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Douglas","visualizacoes":null,"obs":""},{"id":"2026-07-07","data":"2026-07-07","tipo":"Terça","pessoas":13,"visitantes":0,"pastores":3,"valor":0.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-07-10","data":"2026-07-10","tipo":"Sexta","pessoas":18,"visitantes":0,"pastores":4,"valor":300.0,"meio":"Não informado","abriu":"Gabriela?","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":"Nome de quem abriu lido como Gabriela; confirmar se necessário."},{"id":"2026-07-12","data":"2026-07-12","tipo":"Domingo","pessoas":19,"visitantes":0,"pastores":4,"valor":10.0,"meio":"Não informado","abriu":"Deise?","pregador":"Pastora Luciana","visualizacoes":null,"obs":"Nome de quem abriu lido como Deise; confirmar se necessário."},{"id":"2026-07-17","data":"2026-07-17","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Douglas","pregador":"Cíntia","visualizacoes":null,"obs":""},{"id":"2026-07-19","data":"2026-07-19","tipo":"Domingo","pessoas":20,"visitantes":5,"pastores":4,"valor":44.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-07-21","data":"2026-07-21","tipo":"Terça","pessoas":16,"visitantes":0,"pastores":3,"valor":20.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-07-24","data":"2026-07-24","tipo":"Sexta","pessoas":13,"visitantes":0,"pastores":4,"valor":100.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Gabriela","visualizacoes":null,"obs":""},{"id":"2026-07-25","data":"2026-07-25","tipo":"Outro","pessoas":null,"visitantes":null,"pastores":null,"valor":40.0,"meio":"Não informado","abriu":null,"pregador":null,"visualizacoes":null,"obs":"Culto de casas. Registro parcial: presença, visitantes, pastores, abertura e pregador(a) não informados."},{"id":"2026-07-26","data":"2026-07-26","tipo":"Domingo","pessoas":21,"visitantes":4,"pastores":4,"valor":69.8,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":""},{"id":"2026-07-28","data":"2026-07-28","tipo":"Terça","pessoas":10,"visitantes":0,"pastores":3,"valor":0.0,"meio":"Não informado","abriu":"Pastor Wellington","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-07-31","data":"2026-07-31","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":107.0,"meio":"Não informado","abriu":"Gabriela","pregador":"Márcio","visualizacoes":null,"obs":""},{"id":"2026-08-02","data":"2026-08-02","tipo":"Domingo","pessoas":19,"visitantes":0,"pastores":4,"valor":342.0,"meio":"Não informado","abriu":"Deane?","pregador":"Pastora Luciana","visualizacoes":null,"obs":"Nome de quem abriu lido como Deane; confirmar grafia."},{"id":"2026-08-14","data":"2026-08-14","tipo":"Sexta","pessoas":22,"visitantes":2,"pastores":4,"valor":475.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-08-16","data":"2026-08-16","tipo":"Domingo","pessoas":22,"visitantes":3,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Douglas","pregador":"Pastor Wellington","visualizacoes":null,"obs":""},{"id":"2026-08-18","data":"2026-08-18","tipo":"Terça","pessoas":11,"visitantes":0,"pastores":4,"valor":null,"meio":"Não contado","abriu":"Pastora Luciana","pregador":"Douglas","visualizacoes":null,"obs":"Entrada não contada."},{"id":"2026-08-21","data":"2026-08-21","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":50.0,"meio":"Não informado","abriu":"Pastor Wellington","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":""},{"id":"2026-08-23","data":"2026-08-23","tipo":"Domingo","pessoas":19,"visitantes":0,"pastores":4,"valor":110.0,"meio":"PIX","abriu":"Pastora Luciana","pregador":null,"visualizacoes":null,"obs":"Pregador(a) não informado no registro enviado."},{"id":"2026-08-25","data":"2026-08-25","tipo":"Terça","pessoas":13,"visitantes":0,"pastores":3,"valor":null,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Valor financeiro não preenchido no registro; mantido como não informado, sem converter em zero."},{"id":"2026-08-28","data":"2026-08-28","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":240.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Deane","visualizacoes":null,"obs":""},{"id":"2026-08-30","data":"2026-08-30","tipo":"Domingo","pessoas":16,"visitantes":0,"pastores":4,"valor":60.5,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Douglas","visualizacoes":null,"obs":"Valor lido como R$ 60,50."},{"id":"2026-09-01","data":"2026-09-01","tipo":"Terça","pessoas":14,"visitantes":0,"pastores":4,"valor":0.0,"meio":"Não informado","abriu":"Pastor Wellington","pregador":"Pastora Luciana","visualizacoes":null,"obs":""},{"id":"2026-09-04","data":"2026-09-04","tipo":"Sexta","pessoas":10,"visitantes":0,"pastores":4,"valor":60.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Registro reconstruído a partir da sequência e das imagens enviadas."},{"id":"2026-09-06","data":"2026-09-06","tipo":"Domingo","pessoas":15,"visitantes":0,"pastores":4,"valor":150.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":""},{"id":"2026-09-08","data":"2026-09-08","tipo":"Terça","pessoas":null,"visitantes":0,"pastores":2,"valor":0.0,"meio":"Não informado","abriu":"Pastor Wellington","pregador":"Pastor Wellington","visualizacoes":null,"obs":"Quantidade de pessoas não estava preenchida no registro."},{"id":"2026-09-11","data":"2026-09-11","tipo":"Sexta","pessoas":16,"visitantes":0,"pastores":4,"valor":3.5,"meio":"Não informado","abriu":"Pastor Wellington","pregador":"Douglas","visualizacoes":null,"obs":"Valor registrado como R$ 3,50."},{"id":"2026-09-13","data":"2026-09-13","tipo":"Domingo","pessoas":17,"visitantes":0,"pastores":4,"valor":null,"meio":"Não contado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":null,"obs":"No caderno consta que o dízimo/entrada não foi contado."},{"id":"2026-09-18","data":"2026-09-18","tipo":"Sexta","pessoas":10,"visitantes":0,"pastores":4,"valor":150.0,"meio":"Não informado","abriu":"Cláudia","pregador":"Pastor Reinaldo","visualizacoes":null,"obs":""},{"id":"2026-09-20","data":"2026-09-20","tipo":"Domingo","pessoas":11,"visitantes":0,"pastores":2,"valor":10.0,"meio":"PIX","abriu":"Pastora Gizélia","pregador":"Gabriela","visualizacoes":null,"obs":""},{"id":"2026-09-22","data":"2026-09-22","tipo":"Terça","pessoas":8,"visitantes":0,"pastores":3,"valor":0.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":47,"obs":"Live/visualizações: 47."},{"id":"2026-09-25","data":"2026-09-25","tipo":"Sexta","pessoas":17,"visitantes":1,"pastores":4,"valor":105.0,"meio":"Não informado","abriu":"Pastora Luciana","pregador":"Pastor Wellington","visualizacoes":51,"obs":"Visualizações: 51."}];
 const STORAGE_KEY = "painel_cultos_v3";
@@ -589,56 +614,13 @@ function renderAll(){
   document.getElementById('kVisitantes').textContent=visitors.toLocaleString('pt-BR');
   document.getElementById('kValor').textContent=fmtBRL(money);
   document.getElementById('kValorMedio').textContent=knownMoney.length?fmtBRL(money/knownMoney.length):fmtBRL(0);
-  drawLine('chartPresenca', datedRows.filter(x=>Number.isFinite(x.pessoas)), 'pessoas', css('--primary2'), false, 'pessoas');
-  drawBars('chartFinanceiro', datedRows.filter(x=>Number.isFinite(x.valor)), 'valor', css('--primary'), true, d=>fmtBRL(d.valor));
-  const monthPeople = aggregateMonths(datedRows,'pessoas');
-  const monthMoney = aggregateMonths(datedRows,'valor');
-  drawBarsSimple('chartMesPresenca', monthPeople, css('--accent'), false, d=>`${d.value} pessoas`);
-  drawBarsSimple('chartMesFinanceiro', monthMoney, css('--primary2'), true, d=>fmtBRL(d.value));
+  renderDashboardCharts(datedRows);
   renderTipo(rows); renderDestaques(rows);
 }
 function aggregateMonths(rows,key){
   const map={};
   rows.forEach(r=>{ if(!r.data||!Number.isFinite(r[key])) return; const k=r.data.slice(0,7); map[k]=(map[k]||0)+Number(r[key]); });
   return Object.entries(map).sort((a,b)=>a[0].localeCompare(b[0])).map(([key,value])=>({label:monthLabel(key), value:Number(value.toFixed ? value.toFixed(2) : value), key}));
-}
-function chartEmpty(el,msg){ el.innerHTML=`<div class="empty">${msg}</div>`; }
-function svgBase(w,h){ return `<svg viewBox="0 0 ${w} ${h}" role="img">`; }
-function chartSize(el,desktopWidth){
-  const mobile=window.matchMedia('(max-width:800px)').matches;
-  return {w:mobile?Math.max(280,Math.round(el.clientWidth||320)):desktopWidth,h:mobile?210:260};
-}
-function drawLine(id,rows,key,color,money=false,suffix=''){
-  const el=document.getElementById(id), size=chartSize(el,760), w=size.w,h=size.h,pL=42,pR=12,pT=16,pB=38, grid=css('--grid'), muted=css('--muted');
-  if(!rows.length) return chartEmpty(el,'Sem dados para este filtro.');
-  const vals=rows.map(r=>Number(r[key])); let max=Math.max(...vals,1); max=Math.ceil(max*1.15);
-  const x=i=>pL+(rows.length===1?0:(w-pL-pR)*i/(rows.length-1)); const y=v=>pT+(h-pT-pB)*(1-v/max);
-  let s=svgBase(w,h);
-  for(let i=0;i<=4;i++){const yy=pT+(h-pT-pB)*i/4; const v=Math.round(max*(1-i/4)); s+=`<line x1="${pL}" y1="${yy}" x2="${w-pR}" y2="${yy}" stroke="${grid}"/><text x="${pL-8}" y="${yy+4}" text-anchor="end" font-size="10" fill="${muted}">${money?('R$ '+v):v}</text>`;}
-  if(rows.length>1) s+=`<polyline fill="none" stroke="${color}" stroke-width="3" points="${rows.map((r,i)=>`${x(i)},${y(r[key])}`).join(' ')}"/>`;
-  rows.forEach((r,i)=>{const label = money?fmtBRL(r[key]):`${r[key]} ${suffix}`; s+=`<circle cx="${x(i)}" cy="${y(r[key])}" r="4.5" fill="${color}"><title>${fmtDate(r.data)} • ${label}</title></circle>`;});
-  rows.forEach((r,i)=>{if(rows.length<=10 || i%Math.ceil(rows.length/8)===0) s+=`<text x="${x(i)}" y="${h-18}" text-anchor="middle" font-size="9" fill="${muted}">${r.data.slice(8,10)}/${r.data.slice(5,7)}</text>`;});
-  s+='</svg>'; el.innerHTML=s;
-}
-function drawBars(id,rows,key,color,money=false,tipper=null){
-  const el=document.getElementById(id), size=chartSize(el,620), w=size.w,h=size.h,pL=50,pR=8,pT=16,pB=38, grid=css('--grid'), muted=css('--muted');
-  if(!rows.length) return chartEmpty(el,'Sem valores financeiros informados.');
-  let max=Math.max(...rows.map(r=>Number(r[key])),1); max=Math.ceil(max*1.12);
-  const inner=w-pL-pR, gap=6, bw=Math.max(8,(inner/rows.length)-gap), y=v=>pT+(h-pT-pB)*(1-v/max);
-  let s=svgBase(w,h);
-  for(let i=0;i<=4;i++){const yy=pT+(h-pT-pB)*i/4; const v=max*(1-i/4); s+=`<line x1="${pL}" y1="${yy}" x2="${w-pR}" y2="${yy}" stroke="${grid}"/><text x="${pL-7}" y="${yy+4}" text-anchor="end" font-size="9" fill="${muted}">${money?('R$ '+Math.round(v)):Math.round(v)}</text>`;}
-  rows.forEach((r,i)=>{const xx=pL+i*(inner/rows.length)+(inner/rows.length-bw)/2, yy=y(r[key]), hh=(h-pB)-yy; const tip=tipper?tipper(r):(money?fmtBRL(r[key]):r[key]); s+=`<rect x="${xx}" y="${yy}" width="${bw}" height="${Math.max(hh,1)}" rx="4" fill="${color}"><title>${fmtDate(r.data)} • ${tip}</title></rect>`; if(rows.length<=10||i%Math.ceil(rows.length/8)===0) s+=`<text x="${xx+bw/2}" y="${h-18}" text-anchor="middle" font-size="9" fill="${muted}">${r.data.slice(8,10)}/${r.data.slice(5,7)}</text>`;});
-  s+='</svg>'; el.innerHTML=s;
-}
-function drawBarsSimple(id,rows,color,money=false,tipper=null){
-  const el=document.getElementById(id), size=chartSize(el,620), w=size.w,h=size.h,pL=50,pR=8,pT=16,pB=38, grid=css('--grid'), muted=css('--muted');
-  if(!rows.length) return chartEmpty(el,'Sem dados mensais para este filtro.');
-  let max=Math.max(...rows.map(r=>Number(r.value)),1); max=Math.ceil(max*1.12);
-  const inner=w-pL-pR, gap=14, bw=Math.max(26,(inner/rows.length)-gap), y=v=>pT+(h-pT-pB)*(1-v/max);
-  let s=svgBase(w,h);
-  for(let i=0;i<=4;i++){const yy=pT+(h-pT-pB)*i/4; const v=max*(1-i/4); s+=`<line x1="${pL}" y1="${yy}" x2="${w-pR}" y2="${yy}" stroke="${grid}"/><text x="${pL-7}" y="${yy+4}" text-anchor="end" font-size="9" fill="${muted}">${money?('R$ '+Math.round(v)):Math.round(v)}</text>`;}
-  rows.forEach((r,i)=>{const xx=pL+i*(inner/rows.length)+(inner/rows.length-bw)/2, yy=y(r.value), hh=(h-pB)-yy; const tip=tipper?tipper(r):(money?fmtBRL(r.value):r.value); s+=`<rect x="${xx}" y="${yy}" width="${bw}" height="${Math.max(hh,1)}" rx="4" fill="${color}"><title>${r.label} • ${tip}</title></rect><text x="${xx+bw/2}" y="${h-18}" text-anchor="middle" font-size="10" fill="${muted}">${r.label}</text>`;});
-  s+='</svg>'; el.innerHTML=s;
 }
 function renderTipo(rows){
   const groups={};
@@ -837,7 +819,7 @@ let resizeTimer=null;
 window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(document.getElementById('dash')?.classList.contains('active'))renderAll();},140);},{passive:true});
 document.addEventListener('DOMContentLoaded',async()=>{
   if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{});
-  initTheme(); populatePregadores(); renderAll(); renderTable(); refreshCloudPanel(); await initCloud();
+  initCharts(); initTheme(); populatePregadores(); renderAll(); renderTable(); refreshCloudPanel(); await initCloud();
 });
 </script>
 </body>

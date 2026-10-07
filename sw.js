@@ -1,7 +1,9 @@
-const CACHE = 'ip-lus-mobile-v5';
+const CACHE = 'ip-lus-mobile-v6-charts';
 const APP_SHELL = [
   './',
   './index.html',
+  './chart-layout.css',
+  './charts.js',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
