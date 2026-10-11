@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IP LUS • Painel da Liderança</title>
-<!-- build: mobile-v6-charts-2026-10-06 -->
+<!-- build: mobile-v7-auto-weekday-2026-10-11 -->
 <meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
@@ -400,7 +400,6 @@ img,svg{max-width:100%}
         <input type="hidden" id="editId">
         <div class="formgrid">
           <div class="field"><label>Data *</label><input id="data" type="date" required></div>
-          <div class="field"><label>Tipo de culto *</label><select id="tipo" required><option value="">Selecione</option><option>Domingo</option><option>Terça</option><option>Sexta</option><option>Outro</option></select></div>
           <div class="field"><label>Número de pessoas</label><input id="pessoas" type="number" min="0" inputmode="numeric" placeholder="Ex.: 18"></div>
           <div class="field"><label>Visitantes</label><input id="visitantes" type="number" min="0" inputmode="numeric" value="0"></div>
           <div class="field"><label>Pastores presentes</label><input id="pastores" type="number" min="0" inputmode="numeric" value="0"></div>
@@ -644,14 +643,20 @@ function renderDestaques(rows){
   ];
   document.getElementById('destaques').innerHTML=`<div class="highlightGrid">${items.map(i=>`<div class="highlightCard"><small>${i.label}</small><strong>${i.value}</strong>${i.meta?`<span>${i.meta}</span>`:''}</div>`).join('')}</div>`;
 }
+function cultTypeFromDate(date){
+  const weekday=new Date(date+'T12:00:00Z').getUTCDay();
+  return ({0:'Domingo',2:'Terça',5:'Sexta'})[weekday]||'Outro';
+}
 async function saveForm(e){
   e.preventDefault();
   if(!canWrite()){ alert('Seu perfil é somente leitura.'); return; }
   const editId=document.getElementById('editId').value;
+  const cultoDate=document.getElementById('data').value;
+  const original=editId?data.find(r=>r.id===editId):null;
   const obj={
     id: editId || (Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),
-    data:document.getElementById('data').value,
-    tipo:document.getElementById('tipo').value,
+    data:cultoDate,
+    tipo:original?.data===cultoDate?original.tipo:cultTypeFromDate(cultoDate),
     pessoas:valOrNull('pessoas','number'), visitantes:valOrNull('visitantes','number'), pastores:valOrNull('pastores','number'),
     valor:valOrNull('valor','number'), meio:document.getElementById('meio').value, abriu:valOrNull('abriu'), pregador:valOrNull('pregador'),
     visualizacoes:valOrNull('visualizacoes','number'), obs:valOrNull('obs')||''
@@ -665,7 +670,7 @@ async function saveForm(e){
   persist(); resetForm(); populatePregadores(); renderAll(); renderTable(); setLastSync(); goTab('dash'); setTimeout(()=>alert(cloudConfigured?'Registro salvo e sincronizado com a liderança.':'Registro salvo localmente.'),80);
 }
 function resetForm(){ document.getElementById('cultoForm').reset(); document.getElementById('editId').value=''; document.getElementById('visitantes').value=0; document.getElementById('pastores').value=0; document.getElementById('meio').value='Não informado'; }
-function editRow(id){ const r=data.find(x=>x.id===id); if(!r)return; ['data','tipo','pessoas','visitantes','pastores','valor','meio','abriu','pregador','visualizacoes','obs'].forEach(k=>{document.getElementById(k).value=(r[k]??'');}); document.getElementById('editId').value=r.id; goTab('form'); }
+function editRow(id){ const r=data.find(x=>x.id===id); if(!r)return; ['data','pessoas','visitantes','pastores','valor','meio','abriu','pregador','visualizacoes','obs'].forEach(k=>{document.getElementById(k).value=(r[k]??'');}); document.getElementById('editId').value=r.id; goTab('form'); }
 async function deleteRow(id){
   const r=data.find(x=>x.id===id); if(!r||!confirm(`Excluir o registro de ${fmtDate(r.data)}?`)) return;
   if(!canWrite()){ alert('Seu perfil é somente leitura.'); return; }
