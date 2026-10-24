@@ -1,7 +1,8 @@
-const CACHE = 'ip-lus-mobile-v10-login-recovery';
+const CACHE = 'ip-lus-mobile-v11-local-login-library';
 const APP_SHELL = [
   './',
   './index.html',
+  './supabase-2.118.0.min.js',
   './chart-layout.css?v=9',
   './charts.js?v=9',
   './interactions.js?v=9',
@@ -9,7 +10,6 @@ const APP_SHELL = [
   './icon-192.png',
   './icon-512.png'
 ];
-const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -69,9 +69,5 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Mantém apenas a biblioteca pública e versionada disponível offline.
-  if (request.url.startsWith(SUPABASE_CDN)) {
-    event.respondWith(networkFirst(request));
-  }
 });
 
