@@ -1,4 +1,4 @@
-const CACHE = 'ip-lus-mobile-v9-interactive-landscape';
+const CACHE = 'ip-lus-mobile-v10-login-recovery';
 const APP_SHELL = [
   './',
   './index.html',
@@ -74,3 +74,4 @@ self.addEventListener('fetch', event => {
     event.respondWith(networkFirst(request));
   }
 });
+

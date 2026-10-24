@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>IP LUS • Painel da Liderança</title>
-<!-- build: mobile-v9-interactive-landscape-2026-10-23 -->
+<!-- build: mobile-v10-login-recovery-2026-10-23 -->
 <meta name="theme-color" content="#0b0b0c">
 <meta name="color-scheme" content="light dark">
 <meta name="mobile-web-app-capable" content="yes">
@@ -487,9 +487,12 @@ img,svg{max-width:100%}
           <div class="field"><label>Senha</label><input id="cloudPassword" type="password" autocomplete="current-password" placeholder="••••••••"></div>
         </div>
         <div class="cloudActions">
-          <button class="btn gold" type="button" onclick="cloudSignIn()">Entrar</button>
-          <button class="btn ghost" type="button" onclick="cloudSignOut()">Sair</button>
+          <button id="btnCloudSignIn" class="btn gold" type="button" onclick="cloudSignIn()">Entrar</button>
+          <button id="btnCloudSignOut" class="btn ghost" type="button" onclick="cloudSignOut()">Sair</button>
         </div>
+        <p id="cloudAuthMessage" role="status" aria-live="polite" style="margin-top:12px;overflow-wrap:anywhere"></p>
+        <div class="cloudActions"><button class="btn ghost" type="button" onclick="resetCloudAccess()">Reiniciar acesso</button></div>
+        <p>Se o acesso travar, reinicie e entre novamente. A conexão e os registros salvos são mantidos.</p>
         <div class="syncmeta">
           <div><small>Status</small><strong id="cloudMetaStatus">Local</strong></div>
           <div><small>Perfil</small><strong id="cloudMetaRole">—</strong></div>
@@ -549,6 +552,56 @@ let cloudChannel = null;
 let cloudConfigured = false;
 let cloudLoading = false;
 let lastSyncAt = null;
+let cloudInitPromise = null;
+let cloudAuthBusy = false;
+const CLOUD_WAIT_MS = 20000;
+
+function cloudTimeout(work, message='O serviço demorou para responder. Tente novamente ou use Reiniciar acesso.'){
+  let timer;
+  return Promise.race([Promise.resolve().then(work),new Promise((_,reject)=>{
+    timer=setTimeout(()=>{const error=new Error(message);error.code='CLOUD_TIMEOUT';reject(error);},CLOUD_WAIT_MS);
+  })]).finally(()=>clearTimeout(timer));
+}
+async function cloudFetch(input, options={}){
+  const controller=new AbortController();
+  const abort=()=>controller.abort();
+  if(options.signal?.aborted)abort();
+  else options.signal?.addEventListener('abort',abort,{once:true});
+  const timer=setTimeout(abort,15000);
+  try{return await fetch(input,{...options,signal:controller.signal});}
+  finally{clearTimeout(timer);options.signal?.removeEventListener('abort',abort);}
+}
+function setCloudAuthMessage(message){
+  const el=document.getElementById('cloudAuthMessage');if(el)el.textContent=message||'';
+}
+function setCloudAuthBusy(busy){
+  cloudAuthBusy=busy;
+  for(const id of ['btnCloudSignIn','btnCloudSignOut']){
+    const el=document.getElementById(id);if(el)el.disabled=busy;
+  }
+  const button=document.getElementById('btnCloudSignIn');if(button)button.textContent=busy?'Aguarde…':'Entrar';
+}
+function cloudErrorMessage(error){
+  const message=String(error?.message||'');
+  if(error?.code==='CLOUD_TIMEOUT'||/lock.*(timeout|timed out)|acquir.*lock/i.test(message))return 'O acesso demorou para responder. Toque em Reiniciar acesso e entre novamente.';
+  if(/invalid login credentials/i.test(message))return 'E-mail ou senha incorretos. Confira os dados e tente novamente.';
+  if(/email not confirmed/i.test(message))return 'Confirme seu e-mail antes de entrar.';
+  if(/invalid.*(api.?key|key)|api.?key.*invalid/i.test(message))return 'A chave pública da conexão foi recusada. Confira a configuração da base compartilhada.';
+  if(error?.status===429||/rate limit|too many/i.test(message))return 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.';
+  if(error?.name==='AbortError'||/fetch|network|abort/i.test(message))return 'Não foi possível conectar. Verifique a internet e tente novamente. Se continuar, use Reiniciar acesso.';
+  return message||'Não foi possível entrar. Tente novamente ou use Reiniciar acesso.';
+}
+function resetCloudAccess(){
+  const cfg=getCloudConfig();
+  if(!cfg?.url){location.reload();return;}
+  try{
+    const key='sb-'+new URL(cfg.url).hostname.split('.')[0]+'-auth-token';
+    localStorage.removeItem(key);
+    localStorage.removeItem(key+'-code-verifier');
+    localStorage.removeItem(key+'-user');
+    location.reload();
+  }catch(error){setCloudAuthMessage('Não foi possível reiniciar o acesso neste navegador. Feche o app e abra novamente.');}
+}
 
 function clone(x){return JSON.parse(JSON.stringify(x));}
 function css(name){return getComputedStyle(document.body).getPropertyValue(name).trim();}
@@ -747,17 +800,26 @@ function applyRoleUI(){
   const up=document.getElementById('btnUploadSeed'); if(up)up.disabled=!['admin','editor'].includes(cloudRole||'');
   renderTable();
 }
-async function initCloud(){
+function initCloud(){
+  if(cloudInitPromise)return cloudInitPromise;
+  cloudInitPromise=initializeCloud().finally(()=>{cloudInitPromise=null;});
+  return cloudInitPromise;
+}
+async function initializeCloud(){
   const cfg=getCloudConfig();
   if(!cfg?.url || !cfg?.anonKey){ cloudConfigured=false; setCloudStatus('offline','Base local'); applyRoleUI(); refreshCloudPanel(); return; }
   cloudConfigured=true; refreshCloudPanel();
-  if(!window.supabase?.createClient){ setCloudStatus('error','Biblioteca online indisponível'); return; }
+  if(!window.supabase?.createClient){ setCloudStatus('error','Biblioteca online indisponível'); setCloudAuthMessage('Não foi possível carregar o serviço de login. Verifique a internet e reabra o app.'); return; }
+  setCloudAuthBusy(true);setCloudStatus('warn','Verificando acesso…');setCloudAuthMessage('Verificando a sessão salva…');
   try{
-    cloudClient=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true}});
-    const {data:{session}}=await cloudClient.auth.getSession();
-    if(session?.user){ cloudUser=session.user; await loadCloudRole(); await cloudRefresh(true); subscribeRealtime(); }
-    else { setCloudStatus('warn','Conexão pronta • faça login'); applyRoleUI(); }
-  }catch(e){ setCloudStatus('error','Erro de conexão'); }
+    if(!cloudClient)cloudClient=window.supabase.createClient(cfg.url,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true},global:{fetch:cloudFetch}});
+    const {data:sessionData,error}=await cloudTimeout(()=>cloudClient.auth.getSession());
+    if(error)throw error;
+    const session=sessionData?.session;
+    if(session?.user){ cloudUser=session.user; await loadCloudRole(); if(await cloudRefresh(true)){subscribeRealtime();setCloudAuthMessage('Sessão restaurada.');} }
+    else { setCloudStatus('warn','Conexão pronta • faça login'); setCloudAuthMessage('Informe seu e-mail e senha para entrar.'); applyRoleUI(); }
+  }catch(e){ setCloudStatus('error','Acesso não concluído');setCloudAuthMessage(cloudErrorMessage(e)); }
+  finally{setCloudAuthBusy(false);}
 }
 function saveCloudConfig(){
   const url=document.getElementById('cloudUrl').value.trim().replace(/\/$/,'');
@@ -771,25 +833,40 @@ function clearCloudConfig(){
   localStorage.removeItem(CLOUD_CONFIG_KEY); location.reload();
 }
 async function cloudSignIn(){
+  if(cloudAuthBusy)return;
   const cfg=getCloudConfig(); if(!cfg?.url){ alert('Salve a conexão do Supabase primeiro.'); return; }
-  if(!cloudClient) await initCloud();
   const email=document.getElementById('cloudEmail').value.trim(); const password=document.getElementById('cloudPassword').value;
-  if(!email||!password){ alert('Informe e-mail e senha.'); return; }
-  setCloudStatus('warn','Entrando...');
-  const {data:authData,error}=await cloudClient.auth.signInWithPassword({email,password});
-  if(error){ setCloudStatus('error','Falha no login'); alert('Falha no login: '+error.message); return; }
-  cloudUser=authData.user; await loadCloudRole(); await cloudRefresh(true); subscribeRealtime(); document.getElementById('cloudPassword').value='';
+  if(!email||!password){ setCloudAuthMessage('Informe e-mail e senha.'); return; }
+  if(!cloudClient)await initCloud();
+  if(!cloudClient)return;
+  setCloudAuthBusy(true);setCloudStatus('warn','Entrando...');setCloudAuthMessage('Conectando com sua conta…');
+  try{
+    const {data:authData,error}=await cloudTimeout(()=>cloudClient.auth.signInWithPassword({email,password}));
+    if(error)throw error;
+    if(!authData?.user)throw new Error('O serviço não confirmou seu acesso. Tente novamente.');
+    cloudUser=authData.user;document.getElementById('cloudPassword').value='';
+    setCloudStatus('warn','Carregando perfil…');setCloudAuthMessage('Acesso confirmado. Carregando os registros…');
+    await loadCloudRole();
+    if(await cloudRefresh(true)){subscribeRealtime();setCloudAuthMessage('Você entrou com sucesso.');}
+  }catch(error){setCloudStatus('error',cloudUser?'Falha ao carregar a base':'Falha no login');setCloudAuthMessage(cloudErrorMessage(error));}
+  finally{setCloudAuthBusy(false);}
 }
 async function cloudSignOut(){
-  if(cloudClient) await cloudClient.auth.signOut();
-  cloudUser=null; cloudRole=null; if(cloudChannel&&cloudClient){await cloudClient.removeChannel(cloudChannel); cloudChannel=null;}
-  setCloudStatus('warn','Conexão pronta • faça login'); applyRoleUI(); refreshCloudPanel();
+  if(cloudAuthBusy)return;
+  setCloudAuthBusy(true);
+  try{
+  if(cloudClient){const {error}=await cloudTimeout(()=>cloudClient.auth.signOut());if(error)throw error;}
+  cloudUser=null; cloudRole=null; if(cloudChannel&&cloudClient){await cloudTimeout(()=>cloudClient.removeChannel(cloudChannel)); cloudChannel=null;}
+  setCloudStatus('warn','Conexão pronta • faça login');setCloudAuthMessage('Você saiu da conta.'); applyRoleUI(); refreshCloudPanel();
+  }catch(error){setCloudStatus('error','Saída não concluída');setCloudAuthMessage(cloudErrorMessage(error));}
+  finally{setCloudAuthBusy(false);}
 }
 async function loadCloudRole(){
   if(!cloudClient||!cloudUser)return;
-  const {data:profile,error}=await cloudClient.from('profiles').select('role,display_name').eq('id',cloudUser.id).maybeSingle();
-  if(error){ cloudRole='viewer'; }
-  else cloudRole=profile?.role||'viewer';
+  cloudRole='viewer';applyRoleUI();
+  const {data:profile,error}=await cloudTimeout(()=>cloudClient.from('profiles').select('role,display_name').eq('id',cloudUser.id).maybeSingle());
+  if(error)throw error;
+  cloudRole=profile?.role||'viewer';
   applyRoleUI();
 }
 function normalizeCloudRow(r){
@@ -809,16 +886,21 @@ async function syncHistoricalFridayCorrection(rows){
   }catch(error){return error;}
 }
 async function cloudRefresh(silent=false){
-  if(!cloudClient||!cloudUser){ if(!silent)alert('Entre na Base Compartilhada primeiro.'); return; }
-  if(cloudLoading)return; cloudLoading=true; setCloudStatus('warn','Sincronizando...');
-  const {data:rows,error}=await cloudClient.from('cultos').select('id,data,tipo,pessoas,visitantes,pastores,valor,meio,abriu,pregador,visualizacoes,obs').order('data',{ascending:true});
-  if(error){ cloudLoading=false; setCloudStatus('error','Falha ao sincronizar'); if(!silent)alert(error.message); return; }
-  const correctionError=await syncHistoricalFridayCorrection(rows);
-  cloudLoading=false;
+  if(!cloudClient||!cloudUser){ if(!silent)alert('Entre na Base Compartilhada primeiro.'); return false; }
+  if(cloudLoading)return false; cloudLoading=true; setCloudStatus('warn','Sincronizando...');
+  try{
+  const {data:rows,error}=await cloudTimeout(()=>cloudClient.from('cultos').select('id,data,tipo,pessoas,visitantes,pastores,valor,meio,abriu,pregador,visualizacoes,obs').order('data',{ascending:true}));
+  if(error)throw error;
+  const correctionError=await cloudTimeout(()=>syncHistoricalFridayCorrection(rows)).catch(error=>error);
   if(rows?.length){ data=rows.map(normalizeCloudRow); persist(); populatePregadores(); renderAll(); renderTable(); }
   setCloudStatus(correctionError?'warn':'online',correctionError?'Online • correção pendente':`Online • ${rows?.length||0} registros`); setLastSync(); applyRoleUI(); refreshCloudPanel();
   if(correctionError&&!silent)alert('O culto de 05/06 aparece como Sexta no aplicativo, mas a correção na nuvem ficou pendente: '+correctionError.message);
   if(!rows?.length && !silent) alert('A base online ainda está vazia. Se esta é a primeira implantação, use “Publicar base atualizada na nuvem”.');
+  return true;
+  }catch(error){
+    setCloudStatus('error','Falha ao sincronizar');setCloudAuthMessage('Seu acesso foi confirmado, mas os registros não carregaram. '+cloudErrorMessage(error));
+    if(!silent)alert(cloudErrorMessage(error));return false;
+  }finally{cloudLoading=false;}
 }
 async function uploadLocalToCloud(){
   if(!cloudClient||!cloudUser){alert('Entre na Base Compartilhada primeiro.');return;}
@@ -859,3 +941,4 @@ document.addEventListener('DOMContentLoaded',async()=>{
 </script>
 </body>
 </html>
+
