@@ -1,9 +1,10 @@
-const CACHE = 'ip-lus-mobile-v7-auto-weekday';
+const CACHE = 'ip-lus-mobile-v9-interactive-landscape';
 const APP_SHELL = [
   './',
   './index.html',
-  './chart-layout.css',
-  './charts.js',
+  './chart-layout.css?v=9',
+  './charts.js?v=9',
+  './interactions.js?v=9',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
@@ -21,31 +22,30 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(key => key.startsWith('ip-lus-mobile-') && key !== CACHE).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
 });
 
 async function networkFirst(request, fallback) {
+  const cache = await caches.open(CACHE);
   try {
     const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(CACHE);
-      cache.put(request, response.clone()).catch(() => {});
-    }
+    if (!response.ok) throw new Error('Resposta temporariamente indisponível');
+    await cache.put(request, response.clone()).catch(() => {});
     return response;
   } catch (error) {
-    return (await caches.match(request)) || (fallback ? await caches.match(fallback) : Response.error());
+    return (await cache.match(request)) || (fallback ? await cache.match(fallback) : Response.error());
   }
 }
 
 async function cacheFirst(request) {
-  const cached = await caches.match(request);
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
   if (response.ok) {
-    const cache = await caches.open(CACHE);
-    cache.put(request, response.clone()).catch(() => {});
+    await cache.put(request, response.clone()).catch(() => {});
   }
   return response;
 }

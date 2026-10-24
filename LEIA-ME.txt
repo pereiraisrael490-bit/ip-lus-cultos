@@ -40,3 +40,12 @@ ATUALIZAÇÃO V6 — GRÁFICOS MOBILE (06/10/2026)
 - Ampliar abre tela com zoom, rolagem lateral e lista dos valores.
 - Valores consultáveis por toque; Voltar/Fechar restaura a rolagem da Home.
 - Cache PWA v6 inclui chart-layout.css e charts.js.
+
+ATUALIZAÇÃO V9 — INTERATIVIDADE E HORIZONTAL (23/10/2026)
+- Indicadores abrem os cultos que compõem os resultados, incluindo os sem data.
+- Resumos por tipo, destaques e pontos dos gráficos abrem os registros relacionados.
+- Filtros rápidos, busca por data brasileira e retorno ao painel.
+- PWA permite orientação horizontal, com navegação e formulário adaptados.
+- Correção autorizada do culto 05/06/2026: Outro → Sexta.
+- A sincronização corrige apenas esse ID/data/tipo, usando perfil admin/editor e RLS.
+- Nenhuma importação da base histórica ou duplicação de registros.

@@ -10,10 +10,14 @@ const chartNumber = value => Number(value).toLocaleString('pt-BR',{maximumFracti
 const chartValue = (model,value) => model.money ? fmtBRL(value) : chartNumber(value)+' pessoas';
 const chartShortDate = date => date.slice(8,10)+'/'+date.slice(5,7);
 const chartMonth = key => new Date(key+'-01T12:00:00Z').toLocaleDateString('pt-BR',{month:'short',year:'2-digit',timeZone:'UTC'}).replace('.','').replace(' de ','/');
+function monthDrillRow(row){
+  const [year,month]=row.key.split('-').map(Number);
+  return {...row,axis:chartMonth(row.key),from:row.key+'-01',to:new Date(Date.UTC(year,month,0)).toISOString().slice(0,10)};
+}
 
 function chartRows(rows,key,period){
   const known=rows.filter(r=>r.data&&Number.isFinite(r[key]));
-  if(period==='cult') return known.map(r=>({label:fmtDate(r.data)+' • '+(r.tipo||'Culto'),axis:chartShortDate(r.data),value:Number(r[key])}));
+  if(period==='cult') return known.map(r=>({label:fmtDate(r.data)+' • '+(r.tipo||'Culto'),axis:chartShortDate(r.data),value:Number(r[key]),recordId:r.id}));
   const groups=new Map();
   known.forEach(r=>{
     let groupKey=r.data.slice(0,7);
@@ -26,13 +30,16 @@ function chartRows(rows,key,period){
     group.sum+=Number(r[key]); group.count++; groups.set(groupKey,group);
   });
   return [...groups].sort((a,b)=>a[0].localeCompare(b[0])).map(([keyDate,g])=>{
-    let label=monthLabel(keyDate),axis=chartMonth(keyDate);
+    let label=monthLabel(keyDate),axis=chartMonth(keyDate),from=keyDate+'-01';
+    const [year,month]=keyDate.split('-').map(Number);
+    let to=new Date(Date.UTC(year,month,0)).toISOString().slice(0,10);
     if(period==='week'){
       const end=new Date(keyDate+'T12:00:00Z'); end.setUTCDate(end.getUTCDate()+6);
       label=fmtDate(keyDate)+' a '+fmtDate(end.toISOString().slice(0,10)); axis=chartShortDate(keyDate);
+      from=keyDate;to=end.toISOString().slice(0,10);
     }
     // Evolução de presença agregada = média por culto. Financeiro = soma.
-    return {label:label+' • '+g.count+' culto'+(g.count===1?'':'s'),axis,value:key==='pessoas'?g.sum/g.count:g.sum};
+    return {label:label+' • '+g.count+' culto'+(g.count===1?'':'s'),axis,value:key==='pessoas'?g.sum/g.count:g.sum,from,to};
   });
 }
 
@@ -46,8 +53,8 @@ function renderDashboardCharts(rows){
   const configs=[
     {id:'chartPresenca',title:chartPeriod==='cult'?'Evolução de presença':'Presença média '+periodText,description:chartPeriod==='cult'?'Pessoas presentes em cada culto.':'Média de pessoas por culto, agrupada '+periodText+'.',type:'line',rows:chartRows(rows,'pessoas',chartPeriod),color:'--primary2',money:false},
     {id:'chartFinanceiro',title:'Entradas '+periodText,description:chartPeriod==='cult'?'Valores informados em cada culto.':'Soma das entradas informadas, agrupada '+periodText+'.',type:'bar',rows:chartRows(rows,'valor',chartPeriod),color:'--primary',money:true},
-    {id:'chartMesPresenca',title:'Presença por mês',description:'Total de pessoas registradas em cada mês.',type:'horizontal',rows:aggregateMonths(rows,'pessoas').map(r=>({...r,axis:chartMonth(r.key)})),color:'--accent',money:false},
-    {id:'chartMesFinanceiro',title:'Entradas por mês',description:'Total de dízimos / entradas em cada mês.',type:'horizontal',rows:aggregateMonths(rows,'valor').map(r=>({...r,axis:chartMonth(r.key)})),color:'--primary2',money:true}
+    {id:'chartMesPresenca',title:'Presença por mês',description:'Total de pessoas registradas em cada mês.',type:'horizontal',rows:aggregateMonths(rows,'pessoas').map(monthDrillRow),color:'--accent',money:false},
+    {id:'chartMesFinanceiro',title:'Entradas por mês',description:'Total de dízimos / entradas em cada mês.',type:'horizontal',rows:aggregateMonths(rows,'valor').map(monthDrillRow),color:'--primary2',money:true}
   ];
   configs.forEach(model=>{
     chartModels.set(model.id,model);
@@ -107,7 +114,8 @@ function renderChart(el,model,expanded){
     if(event.type==='keydown'&&!['Enter',' '].includes(event.key))return;
     if(event.type==='keydown')event.preventDefault();
     const row=model.rows[Number(group.dataset.point)],readout=document.getElementById(expanded?'chartDialogReadout':model.id+'Readout');
-    readout.innerHTML=`${escapeHtml(row.label)}<br><strong>${escapeHtml(chartValue(model,row.value))}</strong>`;
+    readout.innerHTML=`${escapeHtml(row.label)}<br><strong>${escapeHtml(chartValue(model,row.value))}</strong><button type="button" class="chartViewRecords">Ver cultos deste ponto →</button>`;
+    readout.querySelector('button').onclick=()=>openChartRecords(model,row);
   };
   el.onclick=showPoint; el.onkeydown=showPoint;
 }

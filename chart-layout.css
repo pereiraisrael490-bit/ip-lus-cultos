@@ -59,3 +59,84 @@ body.chartDialogOpen{overflow:hidden}
   .kpiMoney strong{font-size:clamp(21px,7vw,29px);white-space:nowrap}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button{transition:none}}
+
+/* Indicadores e gráficos abrem os cultos que formam cada resultado. */
+.kpi[data-record-mode]{position:relative;text-align:left;color:var(--ink);cursor:pointer;font:inherit}
+.kpi[data-record-mode]::after{content:'↗';position:absolute;right:9px;top:9px;font-size:12px;color:var(--muted)}
+.kpi[data-record-mode] small{padding-right:15px;display:block}
+.kpi[data-record-mode] .sub{display:block}
+.kpi[data-record-mode]:hover,.highlightCard:not(:disabled):hover{border-color:var(--muted)}
+.kpi[data-record-mode]:focus-visible,.typeOpen:focus-visible,.highlightCard:focus-visible,.chartViewRecords:focus-visible{outline:3px solid var(--good);outline-offset:2px}
+.typeOpen{cursor:pointer;min-height:44px;max-width:100%;font:inherit;font-size:12px;text-align:left}
+.highlightCard{color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.highlightCard:disabled{cursor:default;opacity:.7}
+.drillHint{font-size:10px;color:var(--muted)}
+.chartViewRecords{display:block;margin-top:8px;min-height:44px;padding:8px 10px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:9px;cursor:pointer;font:inherit;font-weight:800}
+.recordsTools{margin-bottom:14px;display:grid;gap:10px}
+.recordQuickFilters{display:flex;flex-wrap:wrap;gap:6px}
+.recordQuickFilters button{font:inherit;font-size:12px;min-height:44px;padding:8px 12px;border:1px solid var(--line);background:var(--card2);color:var(--ink);border-radius:999px;font-weight:700;cursor:pointer}
+.recordQuickFilters button[aria-pressed="true"]{background:var(--primary);color:var(--bg);border-color:var(--primary)}
+.recordsSelection{display:flex;align-items:center;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:12px}
+.recordsSelection>span{margin-right:auto}
+.recordsSelection .btn{font-size:11px}
+.recordsSelection [hidden]{display:none!important}
+#recordsContextText{font-size:12px;line-height:1.5;overflow-wrap:anywhere;margin:4px 0 0}
+#recordsTitle{overflow-wrap:anywhere;outline:none}
+.orientationHelp{font-size:11px;color:var(--muted);margin:0 0 12px}
+.mobileCloudQuick button{min-width:0;font-size:12px;padding:8px}
+
+/* Celular deitado: a navegação continua fixa, com mais espaço para os dados. */
+@media(orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  body{padding-bottom:0;-webkit-tap-highlight-color:transparent}
+  header{position:relative;padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left))}
+  .headrow{flex-wrap:nowrap;gap:8px}
+  .brandwrap{gap:9px;min-width:0;flex:1;overflow:hidden}
+  .brand{min-width:0}.brand h1{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .logoBox{width:36px;height:36px;flex:0 0 36px;border-radius:9px}
+  .brand p,.chipline,.actions,.tabs{display:none}
+  .cloudbar{margin-top:4px;gap:5px}
+  .cloudStatus,#roleStatus{font-size:9px;padding:3px 7px}
+  main{width:100%;max-width:100%;padding:12px max(12px,env(safe-area-inset-right)) calc(82px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+  .mobileOnly{display:block}.mobileCloudQuick{display:flex;gap:8px;margin-bottom:8px}
+  .mobileCloudQuick button{flex:1;min-height:44px}
+  .notice{padding:9px 11px;font-size:11px;line-height:1.4;margin-bottom:10px}
+  .filters{grid-template-columns:repeat(3,minmax(0,1fr));padding:10px;gap:8px}
+  .filters .field:last-child{grid-column:auto}
+  .field input,.field select,.field textarea{min-height:44px;max-width:100%;font-size:16px}
+  .kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .kpi{min-width:0;padding:11px;min-height:88px}
+  .kpi small{font-size:10px}.kpi strong{font-size:24px}.kpi .sub{font-size:9px}
+  .kpiMoney{grid-column:span 2}.kpiMoney strong{font-size:26px}
+  .grid2{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0;max-width:100%;overflow:hidden;padding:12px}
+  .chartCardHead h3{font-size:15px}.chartCard .chart{height:210px}
+  .chartToolbar{margin:14px 0 10px}.chartPeriod{width:auto;display:flex}
+  .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}
+  .formgrid .full{grid-column:1/-1}.formfooter{position:static;padding-top:10px}
+  .formfooter .btn,.btn,.iconbtn{min-height:44px}
+  .recordsDesktop,.desktopTypeTable{display:none}
+  .recordsMobileGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+  .typeMobileGrid{display:grid;grid-template-columns:1fr;gap:8px}
+  .typeMobileCard,.recordMobileCard{min-width:0;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card2)}
+  .typeMobileHead,.recordMobileHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:11px}
+  .typeMetrics,.recordMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .typeMetric,.recordMetric{min-width:0;padding:9px 8px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+  .typeMetric small,.recordMetric small{display:block;color:var(--muted);font-size:9px;font-weight:700}
+  .typeMetric strong,.recordMetric strong{display:block;margin-top:4px;font-size:15px;overflow-wrap:anywhere}
+  .moneyMetric{grid-column:1/-1}.moneyMetric strong{color:var(--good)}
+  .recordDetails{margin-top:10px;border-top:1px solid var(--line)}
+  .recordDetails summary{min-height:44px;padding-top:8px;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer}
+  .recordDetailGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:6px}
+  .recordDetailGrid>div{min-width:0}.recordDetailGrid small{display:block;font-size:9px;color:var(--muted)}
+  .recordDetailGrid span{font-size:12px;overflow-wrap:anywhere}.recordDetailGrid .wide{grid-column:1/-1}
+  .recordMobileActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  .recordsSearch{min-width:0;min-height:44px;font-size:16px;flex:1}
+  .mobileBottomNav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:max(6px,env(safe-area-inset-bottom));z-index:1000;background:rgba(18,18,20,.97);border:1px solid #3a3a3d;border-radius:15px;padding:4px;box-shadow:0 8px 24px #0004}
+  .mobileBottomNav button{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:7px;min-width:0;min-height:44px;padding:5px;border:0;border-radius:11px;background:transparent;color:#aeb2bb;font-size:11px;font-weight:800}
+  .mobileBottomNav button .ico{font-size:18px;line-height:1}
+  .mobileBottomNav button.active{background:#fff;color:#111}
+  .chartDialog{width:100%;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0}
+  .chartDialogHead{padding:10px 12px}.chartDialogHead h2{font-size:16px}
+  .chartDialogBody{padding:12px max(12px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+  .footerBrand{padding:12px;font-size:10px}
+}
