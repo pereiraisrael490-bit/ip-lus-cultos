@@ -22,7 +22,7 @@ function participantGroups(rows,field){
 function renderParticipantRanking(rows,field,holderId,coverageId){
   const groups=participantGroups(rows,field),known=groups.reduce((sum,g)=>sum+g.count,0),missing=rows.length-known;
   const coverage=document.getElementById(coverageId);
-  coverage.textContent=`${known} de ${rows.length} cultos com ${field==='pregador'?'pregador(a)':'abertura'} informado${field==='pregador'?'':'a'}.`;
+  coverage.textContent=`${known} de ${rows.length} cultos com ${field==='pregador'?'pregador(a)':'abertura'} informad${field==='pregador'?'o':'a'}.`;
   let rank=0,previous=-1;
   const ranking=groups.map((g,index)=>{
     if(g.count!==previous)rank=index+1;
@@ -30,7 +30,7 @@ function renderParticipantRanking(rows,field,holderId,coverageId){
     const percent=(100*g.count/known).toLocaleString('pt-BR',{maximumFractionDigits:1});
     return `<button type="button" class="participantRow" data-person-field="${field}" data-person-key="${escapeHtml(g.key)}"><span class="participantPlace">${rank}º</span><span class="participantIdentity"><strong>${escapeHtml(g.name)}</strong><span class="participantBar" aria-hidden="true"><i style="width:${100*g.count/groups[0].count}%"></i></span><small>${percent}% dos cultos com nome informado</small></span><span class="participantCount"><strong>${g.count}</strong><small>culto${g.count===1?'':'s'}</small></span></button>`;
   }).join('');
-  document.getElementById(holderId).innerHTML=(ranking||'<div class="empty">Nenhum nome informado neste período.</div>')+(missing?`<button type="button" class="participantMissing" data-person-field="${field}" data-person-missing="true">${missing} culto${missing===1?'':'s'} sem ${field==='pregador'?'pregador(a)':'abertura'} informado${field==='pregador'?'':'a'} · Ver registros →</button>`:'');
+  document.getElementById(holderId).innerHTML=(ranking||'<div class="empty">Nenhum nome informado neste período.</div>')+(missing?`<button type="button" class="participantMissing" data-person-field="${field}" data-person-missing="true">${missing} culto${missing===1?'':'s'} sem ${field==='pregador'?'pregador(a)':'abertura'} informad${field==='pregador'?'o':'a'} · Ver registros →</button>`:'');
 }
 function renderParticipation(){
   if(!document.getElementById('participacao'))return;
@@ -55,7 +55,7 @@ function openParticipantRecords(button){
   if(!name)return;
   openRecords(document.getElementById('pSemData').checked?'all':'dated',{
     filters:participationFilters(),person:{field,key,missing},returnTab:'participacao',
-    title:missing?`Cultos sem ${field==='pregador'?'pregador(a)':'abertura'} informado${field==='pregador'?'':'a'}`:`${field==='pregador'?'Pregações':'Aberturas'} · ${name}`
+    title:missing?`Cultos sem ${field==='pregador'?'pregador(a)':'abertura'} informad${field==='pregador'?'o':'a'}`:`${field==='pregador'?'Pregações':'Aberturas'} · ${name}`
   });
 }
 document.addEventListener('DOMContentLoaded',()=>{

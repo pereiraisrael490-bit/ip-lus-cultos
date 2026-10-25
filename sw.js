@@ -1,4 +1,4 @@
-const CACHE = 'ip-lus-mobile-v12-participacao-horizontal';
+const CACHE = 'ip-lus-mobile-v12.1-participacao-horizontal';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,7 +6,7 @@ const APP_SHELL = [
   './chart-layout.css?v=12',
   './charts.js?v=12',
   './interactions.js?v=12',
-  './participation.js?v=12',
+  './participation.js?v=12.1',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
