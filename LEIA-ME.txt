@@ -49,3 +49,9 @@ ATUALIZAÇÃO V9 — INTERATIVIDADE E HORIZONTAL (23/10/2026)
 - Correção autorizada do culto 05/06/2026: Outro → Sexta.
 - A sincronização corrige apenas esse ID/data/tipo, usando perfil admin/editor e RLS.
 - Nenhuma importação da base histórica ou duplicação de registros.
+
+Versão v12 — 25/10/2026
+- Área Pregadores e aberturas: rankings por quantidade de cultos, filtros de período/tipo e acesso aos registros de cada nome.
+- Informa a cobertura dos nomes; campos vazios não são contados como pessoas. Grafias diferentes e nomes com ? ficam separados.
+- Botão Horizontal solicita tela cheia e orientação landscape em navegadores compatíveis. Rotação livre libera o bloqueio. Navegadores sem suporte recebem orientação para ativar rotação automática no Android.
+- Preserva biblioteca de login local, Supabase, perfis e base histórica. Sem migração ou republicação de dados.

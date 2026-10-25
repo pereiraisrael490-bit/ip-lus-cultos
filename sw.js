@@ -1,11 +1,12 @@
-const CACHE = 'ip-lus-mobile-v11-local-login-library';
+const CACHE = 'ip-lus-mobile-v12-participacao-horizontal';
 const APP_SHELL = [
   './',
   './index.html',
   './supabase-2.118.0.min.js',
-  './chart-layout.css?v=9',
-  './charts.js?v=9',
-  './interactions.js?v=9',
+  './chart-layout.css?v=12',
+  './charts.js?v=12',
+  './interactions.js?v=12',
+  './participation.js?v=12',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
@@ -61,6 +62,11 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(networkFirst(request, './index.html'));
+    return;
+  }
+
+  if (url.origin === self.location.origin && url.pathname.endsWith('/manifest.webmanifest')) {
+    event.respondWith(networkFirst(request));
     return;
   }
 

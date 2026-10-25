@@ -140,3 +140,32 @@ body.chartDialogOpen{overflow:hidden}
   .chartDialogBody{padding:12px max(12px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
   .footerBrand{padding:12px;font-size:10px}
 }
+
+/* Comparação de participações: a barra indica a frequência relativa ao maior total. */
+.participationShortcut{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:64px;margin:12px 0;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.participationShortcut strong,.participationShortcut small{display:block;overflow-wrap:anywhere}.participationShortcut small{margin-top:4px;color:var(--muted);font-size:12px}.participationShortcut>span:first-child{min-width:0}
+.participationHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}.participationHeader h2{margin:0;font-size:clamp(19px,4vw,24px);overflow-wrap:anywhere}
+.participationFilters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:12px;align-items:end}.participationFilters>*{min-width:0}
+.participationUndated{display:flex;align-items:center;gap:10px;min-height:44px;margin-top:8px;font-size:13px;cursor:pointer}.participationUndated input{width:20px;height:20px;accent-color:var(--good)}
+#participationScope{font-size:12px;line-height:1.5;margin:4px 0 0}
+.participationGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}.participationGrid>*{min-width:0}.participationGrid .card>p{font-size:12px;line-height:1.5}
+.participantRow{display:grid;grid-template-columns:26px minmax(0,1fr) 48px;gap:10px;align-items:center;width:100%;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);padding:14px 0;text-align:left;font:inherit;cursor:pointer}
+.participantPlace{font-weight:800;color:var(--muted);font-size:12px}.participantIdentity{min-width:0}.participantIdentity>strong{display:block;overflow-wrap:anywhere;font-size:14px;line-height:1.4}.participantIdentity>small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:5px}
+.participantBar{display:block;height:6px;margin-top:8px;border-radius:10px;background:var(--line);overflow:hidden}.participantBar i{display:block;height:100%;background:var(--good);border-radius:10px}
+.participantCount{text-align:right}.participantCount strong{display:block;font-size:22px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.participantCount small{color:var(--muted);font-size:10px}
+.participantMissing{width:100%;min-height:44px;margin-top:8px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--card2);color:var(--muted);font:inherit;font-size:12px;text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.participationNote{font-size:12px;line-height:1.6;color:var(--muted);padding:0 4px;overflow-wrap:anywhere}.participantRow:focus-visible,.participantMissing:focus-visible,.participationShortcut:focus-visible{outline:3px solid var(--good);outline-offset:2px}
+@media(max-width:800px){
+  .mobileCloudQuick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .mobileCloudQuick button{min-height:44px}
+  .participationGrid{grid-template-columns:minmax(0,1fr);gap:10px;margin-top:10px}
+  .participationFilters{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .participationFilters input,.participationFilters select{font-size:16px;min-height:44px;max-width:100%}
+  .participationHeader{margin-bottom:12px}.participantRow{gap:8px}.participantIdentity>strong{font-size:13px}
+  .participationShortcut{padding:12px}.participationShortcut strong{font-size:14px}
+}
+@media(orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .mobileCloudQuick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .participationGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .participationFilters{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
